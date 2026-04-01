@@ -3,4 +3,9 @@
   height: 100%;
   background: radial-gradient(var(--color-grid) 1px, transparent 1px);
   background-size: 10px 10px;
+
+  transition: opacity var(--duration-slow) var(--ease-out-quad);
+  @starting-style {
+    opacity: 0;
+  }
 }
