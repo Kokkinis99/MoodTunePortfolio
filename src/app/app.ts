@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { afterNextRender, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -9,4 +9,14 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('MoodTunePortfolio');
+
+  constructor() {
+    afterNextRender(() => {
+      const overlay = document.getElementById('mood-overlay');
+      if (overlay) {
+        overlay.classList.add('fade-out');
+        overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+      }
+    });
+  }
 }

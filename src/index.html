@@ -6,8 +6,39 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    #mood-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity var(--duration-standard) var(--ease-in-out-quad);
+      pointer-events: none;
+    }
+    #mood-overlay.fade-out {
+      opacity: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #mood-overlay {
+        transition: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="mood-overlay"></div>
+  <script>
+    (function () {
+      var colors = { happy: '#78b853', sad: '#a18fff', calm: '#5c9ead', angry: '#ff3f52' };
+      var mood = new URLSearchParams(window.location.search).get('mood');
+      var color = colors[mood];
+      if (color) {
+        document.getElementById('mood-overlay').style.background = color;
+      } else {
+        document.getElementById('mood-overlay').style.display = 'none';
+      }
+    })();
+  </script>
   <app-root></app-root>
 </body>
 </html>
