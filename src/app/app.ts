@@ -17,7 +17,7 @@ export class App {
         overlay.classList.add('fade-out');
         overlay.addEventListener('transitionend', () => {
           overlay.remove();
-          document.documentElement.style.removeProperty('--entry-color');
+          document.documentElement.style.removeProperty('background');
         }, { once: true });
       }
     });

@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build:deploy": "rm -rf docs && ng build --base-href / && mkdir docs && mv dist/MoodTunePortfolio/browser/* docs/ && rmdir dist/MoodTunePortfolio/browser && cp CNAME docs/",
+    "deploy": "npm run build:deploy && git add docs/ && git commit -m 'deploy' && git push",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
