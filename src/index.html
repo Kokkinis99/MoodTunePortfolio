@@ -7,12 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <style>
+    html {
+      background: var(--entry-color);
+    }
     #mood-overlay {
       position: fixed;
       inset: 0;
       z-index: 9999;
       opacity: 1;
-      transition: opacity var(--duration-standard) var(--ease-in-out-quad);
+      background: var(--entry-color);
+      transition: opacity 150ms cubic-bezier(0.455, 0.03, 0.515, 0.955);
       pointer-events: none;
     }
     #mood-overlay.fade-out {
@@ -24,21 +28,24 @@
       }
     }
   </style>
-</head>
-<body>
-  <div id="mood-overlay"></div>
   <script>
     (function () {
-      var colors = { happy: '#78b853', sad: '#a18fff', calm: '#5c9ead', angry: '#ff3f52' };
+      var colors = {
+        happy: '#78b853', sad: '#a18fff',
+        calm: '#5c9ead', angry: '#ff3f52'
+      };
       var mood = new URLSearchParams(window.location.search).get('mood');
       var color = colors[mood];
       if (color) {
-        document.getElementById('mood-overlay').style.background = color;
+        document.documentElement.style.setProperty('--entry-color', color);
       } else {
-        document.getElementById('mood-overlay').style.display = 'none';
+        document.documentElement.style.setProperty('--entry-color', 'transparent');
       }
     })();
   </script>
+</head>
+<body>
+  <div id="mood-overlay"></div>
   <app-root></app-root>
 </body>
 </html>

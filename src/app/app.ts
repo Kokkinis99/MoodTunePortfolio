@@ -15,7 +15,10 @@ export class App {
       const overlay = document.getElementById('mood-overlay');
       if (overlay) {
         overlay.classList.add('fade-out');
-        overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+        overlay.addEventListener('transitionend', () => {
+          overlay.remove();
+          document.documentElement.style.removeProperty('--entry-color');
+        }, { once: true });
       }
     });
   }
