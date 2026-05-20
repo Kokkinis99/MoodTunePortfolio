@@ -24,17 +24,19 @@
   --color-bg: hsl(0 0% 98%);
   --color-text: hsl(0 0% 4%);
   --color-text-secondary: hsl(0 0% 44%);
+  --color-text-inverse: hsl(0 0% 98%);
   --color-text-link: hsl(0 0% 60%);
   --color-hover: hsl(0 0% 4% / 0.1);
   --color-backdrop: hsl(0 0% 98% / 0.1);
   --color-backdrop-closing: hsl(0 0% 98% / 0);
-  --color-grid: hsl(0 0% 85% / 0.3);
+  --color-grid: hsl(0 0% 85% / 0.55);
 
   // Mood colors
   --color-mood-happy: #78b853;
   --color-mood-sad: #a18fff;
   --color-mood-calm: #5c9ead;
   --color-mood-angry: #ff3f52;
+  --color-mood-default: #1DA1F2;
 
   // Animation durations
   --duration-micro: 50ms;
@@ -196,5 +198,42 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .icon-enter {
     animation: none;
+  }
+}
+
+// Broken streak particle animations (used via direct DOM manipulation)
+.particle {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  transform: scale(3);
+  animation:
+    colorShift var(--fade-duration) 250ms ease backwards,
+    fadeToTransparent var(--fade-duration) ease forwards,
+    disperse 500ms ease forwards;
+}
+
+@keyframes colorShift {
+  from { background: var(--fromColor); }
+}
+
+@keyframes fadeToTransparent {
+  to { opacity: 0; }
+}
+
+@keyframes disperse {
+  from {
+    transform: translate(-50%, -50%) scale(3);
+  }
+  to {
+    transform: translate(
+      calc(-50% + cos(var(--angle)) * var(--distance)),
+      calc(-50% + sin(var(--angle)) * var(--distance))
+    ) scale(0.5);
   }
 }

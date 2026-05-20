@@ -1,0 +1,234 @@
+<div class="page">
+
+  <!-- ===== HEADER (full-bleed) ===== -->
+  <header class="site-header" [style.background]="headerBg">
+
+    <div class="header-top">
+      <a href="https://kokkin.is" class="back-link">← kokkin.is</a>
+      <h1 class="site-title">MoodTune</h1>
+    </div>
+
+    <!-- full-bleed image row — in normal flow, between title and desc -->
+    <div class="mood-images-strip" aria-hidden="true">
+      <img
+        *ngFor="let src of moodStrip"
+        [src]="src"
+        class="mood-img"
+        draggable="false"
+      />
+    </div>
+
+    <div class="header-bottom">
+      <p class="site-desc">
+        Learning Angular and Ionic by building something real. Log how you feel —
+        MoodTune picks a Spotify playlist to match. It never shipped, but
+        everything on this page works.
+      </p>
+    </div>
+
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main-content">
+
+    <!-- Interactive demos -->
+    <div class="components-area">
+
+      <div class="component-col">
+        <p class="component-label">Calendar</p>
+        <app-calendar-demo [initialMood]="currentMood"></app-calendar-demo>
+        <p class="component-desc">
+          Tap to expand. Click any date to change the mood.
+          The colour of the whole calendar follows the selected day's mood.
+        </p>
+      </div>
+
+      <div class="component-col">
+        <p class="component-label">Save your streak</p>
+        <app-broken-streak-demo [initialMood]="currentMood"></app-broken-streak-demo>
+        <p class="component-desc">
+          Tap the card 7 times to save your MoodWeek streak. Each tap fires
+          30 CSS particles — cos()/sin() radial dispersion, no canvas.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- ===== ANALYSIS ===== -->
+    <section class="analysis-section">
+
+      <div class="analysis-grid">
+
+        <div class="analysis-col">
+          <p class="col-heading">What I learned</p>
+
+          <div class="analysis-item">
+            <p class="item-title">Spotify PKCE OAuth</p>
+            <p class="item-desc">Auth-code-with-PKCE — a code verifier generated client-side, SHA-256 hashed, exchanged for an access token. No backend secret, no server needed.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">Firebase + Firestore</p>
+            <p class="item-desc">First time setting up a NoSQL database from scratch — mood history, streak data, user profiles. Also the first time setting up a Firebase project.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">Spotify Web API</p>
+            <p class="item-desc">Track search, playlist creation, auth scopes. Plus the Web Playback SDK so playback stays inside the app — no redirecting out to Spotify.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">ReccoBeats</p>
+            <p class="item-desc">A recommendation engine scored on mood–audio feature correlations. First time consuming an API I didn't write and had to properly understand.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">Angular + Ionic patterns</p>
+            <p class="item-desc">Standalone components, OnPush change detection, NgZone, CDK Drag-Drop — most of this was new territory when the project started.</p>
+          </div>
+
+        </div>
+
+        <div class="analysis-col">
+          <p class="col-heading">What I found interesting</p>
+
+          <div class="analysis-item">
+            <p class="item-title">Spring animations</p>
+            <p class="item-desc">The calendar expand/collapse uses a <code>linear()</code> spring curve — controlled overshoot that makes the motion feel physical rather than mechanical. Getting it right took longer than the rest of the calendar.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">Mood theming</p>
+            <p class="item-desc">One CSS variable on <code>:root</code>. The whole app recolours in a single frame — every surface, every accent, every gradient responds immediately.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">CSS particles</p>
+            <p class="item-desc"><code>cos()</code>/<code>sin()</code> for radial dispersion, per-particle custom properties for angle and distance. 30 particles per burst, no canvas, no library.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">MoodWeek streaks</p>
+            <p class="item-desc">Miss a day — the broken streak modal fires. Tap the card 7 times to save it, each tap revealing more of the mood image underneath the grayscale overlay.</p>
+          </div>
+
+          <div class="analysis-item">
+            <p class="item-title">FLIP animations</p>
+            <p class="item-desc">Polaroid expand uses reverse-FLIP — measure the final rect, apply a transform to jump to the start position, then clear it so the browser interpolates back.</p>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Sticky notes scattered within the section -->
+      <div class="sticky-notes-layer">
+        <app-sticky-note
+          emoji="📅"
+          text="The spring overshoot on expand took longer than everything else combined. OnPush + NgZone finally got it to 60 fps."
+          color="yellow"
+          [rotation]="-3"
+        ></app-sticky-note>
+
+        <app-sticky-note
+          emoji="🔥"
+          text="30 particles per tap. cos()/sin(), no canvas. Definitely overkill. Completely worth it."
+          color="pink"
+          [rotation]="2"
+        ></app-sticky-note>
+
+        <app-sticky-note
+          emoji="🎨"
+          text="One CSS variable swap — the whole app recolours in a single frame."
+          color="blue"
+          [rotation]="-1"
+        ></app-sticky-note>
+      </div>
+
+      <!-- Polaroids — in the app, draggable -->
+      <div class="polaroid-zone">
+
+        <app-polaroid-card
+          caption="spotify login"
+          dialogTitle="PKCE OAuth flow"
+          dialogDesc="No passwords stored. MoodTune uses Spotify's PKCE flow — a code verifier is generated client-side, SHA-256 hashed, and exchanged for access tokens. The whole dance happens on-device with no backend secret."
+          [rotation]="-6"
+          [initialX]="0"
+          [initialY]="20"
+        ></app-polaroid-card>
+
+        <app-polaroid-card
+          caption="log a mood"
+          dialogTitle="Mood entry"
+          dialogDesc="One tap to log. Four moods — happy, calm, sad, angry — each with its own color palette that ripples through the whole app immediately via a single CSS variable swap."
+          [rotation]="4"
+          [initialX]="185"
+          [initialY]="65"
+        ></app-polaroid-card>
+
+        <app-polaroid-card
+          caption="your playlist"
+          dialogTitle="Mood → music"
+          dialogDesc="After logging, ReccoBeats scores your mood against a track catalogue and returns a ranked playlist. Spotify playback starts in-app via the Web Playback SDK — no leaving the app."
+          [rotation]="-3"
+          [initialX]="370"
+          [initialY]="15"
+        ></app-polaroid-card>
+
+        <app-polaroid-card
+          caption="how we pick songs"
+          dialogTitle="ReccoBeats API"
+          dialogDesc="A recommendation engine trained on mood–audio feature correlations. Valence, energy, and danceability are weighted differently per mood — high valence + high energy for happy, low valence + low energy for sad."
+          [rotation]="2"
+          [initialX]="555"
+          [initialY]="55"
+        ></app-polaroid-card>
+
+        <app-polaroid-card
+          caption="moodweek"
+          dialogTitle="MoodWeek streaks"
+          dialogDesc="Log every day for a week and complete a MoodWeek. Miss a day and the broken streak modal fires — tap the card 7 times to save it, or skip and start fresh. Streak data lives in Firebase Firestore."
+          [rotation]="7"
+          [initialX]="740"
+          [initialY]="35"
+        ></app-polaroid-card>
+
+        <app-polaroid-card
+          caption="broken streak"
+          dialogTitle="The broken streak modal"
+          dialogDesc="The grayscale overlay shrinks with each of 7 taps, revealing the mood image underneath. Each tap fires 30 CSS particles — cos()/sin() radial dispersion, per-particle custom properties, no canvas."
+          [rotation]="-5"
+          [initialX]="900"
+          [initialY]="70"
+        ></app-polaroid-card>
+
+      </div>
+
+    </section>
+
+    <!-- ===== FIGMA PLAYGROUND ===== -->
+    <section class="figma-section">
+      <p class="component-label">Design file</p>
+      <div class="figma-embed">
+        <iframe
+          [src]="figmaSrc"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="stack-pills">
+      <span>Angular 18</span>
+      <span>Ionic + Capacitor</span>
+      <span>Firebase</span>
+      <span>Spotify API</span>
+      <span>ReccoBeats</span>
+      <span>TypeScript</span>
+    </div>
+  </footer>
+
+</div>

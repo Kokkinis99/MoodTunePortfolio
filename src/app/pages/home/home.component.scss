@@ -1,0 +1,309 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+// =============================================================================
+// HEADER — full bleed, own inner constraint
+// =============================================================================
+
+.site-header {
+  // background set via [style.background]="headerBg" binding — driven by ?mood= URL param
+  width: 100%;
+  overflow: hidden; // clips the half-visible images at left/right edges
+  display: flex;
+  flex-direction: column;
+
+  // Shared inner constraint for top/bottom text blocks
+  .header-top,
+  .header-bottom {
+    max-width: 1200px;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-top   { padding-top: 48px;  padding-bottom: 24px; }
+  .header-bottom { padding-top: 20px; padding-bottom: 56px; }
+
+  .back-link {
+    font-size: var(--font-size-12);
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
+    transition: color 0.15s ease;
+    &:hover { color: rgba(255, 255, 255, 0.95); }
+  }
+
+  .site-title {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .site-desc {
+    font-size: var(--font-size-14);
+    color: rgba(255, 255, 255, 0.72);
+    max-width: 480px;
+    line-height: 1.65;
+  }
+
+  // ── mood images strip — in normal flow, full-bleed ───────
+  .mood-images-strip {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    pointer-events: none;
+    margin-left: -32px; // first image half-cut at left viewport edge
+    padding-block: 10px; // rotated corners extend ~7px beyond 64px — give them room
+
+    // Plateau at 25–50% covers where the title sits on any viewport width
+    // (content starts at 40px on 1200px, 400px on 1920px — both land in this band)
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent       0%,
+      rgba(0,0,0,0.06)  8%,
+      rgba(0,0,0,1)    22%,
+      rgba(0,0,0,1)    30%,
+      rgba(0,0,0,0.06) 86%,
+      transparent      100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent       0%,
+      rgba(0,0,0,0.06)  8%,
+      rgba(0,0,0,1)    22%,
+      rgba(0,0,0,1)    30%,
+      rgba(0,0,0,0.06) 86%,
+      transparent      100%
+    );
+    // Gradient is 100vw wide, shifted 32px right so 0% aligns with viewport left
+    -webkit-mask-size: 100vw 100%;
+    mask-size: 100vw 100%;
+    -webkit-mask-position: 32px 0;
+    mask-position: 32px 0;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .mood-img {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    // Desaturate, reduce contrast slightly — keeps tonal range and visible detail
+    // without the harsh darks or blown-out whites that brightness(2) causes
+    filter: grayscale(1) brightness(1.8) contrast(0.65);
+    user-select: none;
+    display: block;
+
+    &:nth-child(4n+1) { transform: rotate(-7deg);   }
+    &:nth-child(4n+2) { transform: rotate(-3.5deg); }
+    &:nth-child(4n+3) { transform: rotate(3.5deg);  }
+    &:nth-child(4n+4) { transform: rotate(7deg);    }
+  }
+}
+
+// =============================================================================
+// MAIN
+// =============================================================================
+
+.main-content {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding-inline: 40px;
+}
+
+.components-area {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.component-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+
+  .component-label {
+    font-size: var(--font-size-12);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .component-desc {
+    font-size: var(--font-size-12);
+    color: var(--color-text-secondary);
+    max-width: 280px;
+    line-height: 1.6;
+  }
+}
+
+// =============================================================================
+// ANALYSIS SECTION
+// =============================================================================
+
+.analysis-section {
+  position: relative;
+  width: 100%;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  padding-bottom: 80px; // breathing room before polaroid zone
+}
+
+.analysis-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  .col-heading {
+    font-size: var(--font-size-12);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--color-hover);
+  }
+}
+
+.analysis-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--color-hover);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .item-title {
+    font-size: var(--font-size-14);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+
+  .item-desc {
+    font-size: var(--font-size-12);
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9em;
+      background: var(--color-hover);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--color-text);
+    }
+  }
+}
+
+// =============================================================================
+// STICKY NOTES — float within analysis-section
+// =============================================================================
+
+.sticky-notes-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  // 150: above resting polaroids (no z-index), below grabbed/clicked (200+)
+  z-index: 150;
+
+  app-sticky-note {
+    pointer-events: all;
+    position: absolute;
+
+    &:nth-child(1) { top: 40px;  left: 44%; }  // yellow — center-top, between columns
+    &:nth-child(2) { top: 260px; right: 2%;  }  // pink   — right side, mid
+    &:nth-child(3) { top: 160px; left: 8%;   }  // blue   — left side, mid
+  }
+}
+
+// =============================================================================
+// POLAROID ZONE
+// =============================================================================
+
+.polaroid-zone {
+  position: relative;
+  width: 100%;
+  height: 420px; // fixed — cards overlap freely, footer unaffected
+  overflow: visible;
+}
+
+// =============================================================================
+// FIGMA EMBED
+// =============================================================================
+
+.figma-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.figma-embed {
+  width: 100%;
+  height: 720px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-hover);
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+}
+
+// =============================================================================
+// FOOTER
+// =============================================================================
+
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+  border-top: 1px solid var(--color-hover);
+  padding: 32px 40px 48px;
+
+  .stack-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    span {
+      padding: 4px 12px;
+      border: 1px solid var(--color-hover);
+      border-radius: 20px;
+      font-size: var(--font-size-12);
+      color: var(--color-text-secondary);
+    }
+  }
+}
