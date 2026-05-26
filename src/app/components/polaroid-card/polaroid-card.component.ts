@@ -177,7 +177,8 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   @Input() rotation = 0;
   @Input() initialX = 0;  // fallback px value
   @Input() initialY = 0;
-  @Input() xPct = -1;     // percentage of viewport width (0–100); overrides initialX when set
+  @Input() xPct = -1;        // percentage of viewport width (0–100); overrides initialX when set
+  @Input() xPctNarrow = -1;  // xPct override for viewports < 1650px
   @Input() imageSrcs: string[] = [];
 
   dragPos = { x: 0, y: 0 };
@@ -201,7 +202,9 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    const x = this.xPct >= 0 ? Math.round(window.innerWidth * this.xPct / 100) : this.initialX;
+    const narrow = window.innerWidth < 1650;
+    const pct    = (narrow && this.xPctNarrow >= 0) ? this.xPctNarrow : this.xPct;
+    const x    = pct >= 0 ? Math.round(window.innerWidth * pct / 100) : this.initialX;
     this.dragPos = { x, y: this.initialY };
   }
 

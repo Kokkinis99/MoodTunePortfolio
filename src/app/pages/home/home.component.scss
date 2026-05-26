@@ -152,12 +152,19 @@
     color: var(--color-text-secondary);
     max-width: 280px;
     line-height: 1.6;
+    align-self: center;
   }
 }
 
 // =============================================================================
 // PLAYGROUND — sticky notes + polaroid zone
 // =============================================================================
+
+.playground-label {
+  position: absolute;
+  top: -40px;
+  left: 40px;
+}
 
 .playground-section {
   position: absolute;
@@ -186,6 +193,12 @@
     &:nth-of-type(1) { top: 350px; left: 13.7%; }  // yellow
     &:nth-of-type(2) { top: 265px; left: 80.7%; }  // pink
     &:nth-of-type(3) { top:  68px; left: 65.0%; }  // blue
+
+    @media (max-width: 1649px) {
+      &:nth-of-type(1) { left:  9.5%; }  // yellow — more left
+      &:nth-of-type(2) { left: 84.5%; }  // pink  — more right
+      &:nth-of-type(3) { left: 68.5%; }  // blue  — more right
+    }
   }
 }
 

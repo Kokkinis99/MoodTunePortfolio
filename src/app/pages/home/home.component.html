@@ -50,6 +50,7 @@
     </div>
 
     <!-- ===== PLAYGROUND ===== -->
+    <p class="component-label playground-label">Drag the cards and notes around, click them to explore</p>
     <section class="playground-section">
 
       <!-- sticky notes + polaroids flat in the same overlay -->
@@ -80,7 +81,7 @@
           videoSrc="videos/app-icon.mp4"
           videoObjectPosition="right"
           [rotation]="4"
-          [xPct]="20.2"
+          [xPct]="20.2" [xPctNarrow]="14.5"
           [initialY]="15"
         ></app-polaroid-card>
 
@@ -92,7 +93,7 @@
           videoSrc="videos/playlist-generation.mp4"
           [landscapeVideo]="true"
           [rotation]="-3"
-          [xPct]="8.7"
+          [xPct]="8.7" [xPctNarrow]="3.0"
           [initialY]="95"
         ></app-polaroid-card>
 
@@ -103,7 +104,7 @@
           dialogDesc="You caught me, no video here, I never got to implementing the MoodWeek feature hahah. But I did design it, and I also implemented the way it works on Firestore. The idea is simple, you log every day for a week and complete a MoodWeek. What you get in return is a summary of your logged moods this week, and a summary playlist! You also get a little badge :)"
           [imageSrcs]="['images/moodweek/first.png', 'images/moodweek/second.png']"
           [rotation]="7"
-          [xPct]="26.6"
+          [xPct]="26.6" [xPctNarrow]="20.5"
           [initialY]="285"
         ></app-polaroid-card>
 
@@ -125,7 +126,7 @@
           dialogDesc="I love streaks. I love them in fitness apps, in habit tracking apps, everywhere. It gives me a sense of progress and accomplishment. But what I love more than streaks, is animating them. The way the little happy icon pops up in this clip took me way more than I'd like to admit. But I'm glad I did it."
           videoSrc="videos/streak.mp4"
           [rotation]="-6"
-          [xPct]="68.7"
+          [xPct]="68.7" [xPctNarrow]="74.0"
           [initialY]="285"
         ></app-polaroid-card>
 
@@ -136,7 +137,7 @@
           dialogDesc="Little tricks like this one are my favorite part of building applications. Ionic doesn't make it easy avoiding its default navigation system. But what you could do is cover everything up with a circle, fade it to the page background color, and once it's faded, instantly transition to the new page. Then fade the data from the new page in. The result is a smooth, custom transition that feels native."
           videoSrc="videos/route-animation.mp4"
           [rotation]="3"
-          [xPct]="78.4"
+          [xPct]="78.4" [xPctNarrow]="83.5"
           [initialY]="18"
         ></app-polaroid-card>
 
