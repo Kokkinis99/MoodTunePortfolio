@@ -32,19 +32,25 @@ const TIMING = { collapse: 750 };
       class="dialog"
       [class.ready]="ready()"
       [class.closing]="closing()"
+      [class.landscape]="landscapeVideo"
     >
       <button class="close-btn" (click)="close()">✕</button>
 
-      <div class="dialog-image">
-        <div *ngIf="!imageSrc" class="image-placeholder">
+      <div class="dialog-image" [class.has-video]="videoSrc" [class.hiding]="hidingMedia()">
+        <div *ngIf="!imageSrc && !videoSrc && imageSrcs.length === 0" class="image-placeholder">
           <span>{{ caption }}</span>
         </div>
-        <img *ngIf="imageSrc" [src]="imageSrc" [alt]="dialogTitle" draggable="false" />
+        <img *ngIf="imageSrc && !videoSrc && imageSrcs.length === 0" [src]="imageSrc" [alt]="dialogTitle" draggable="false" />
+        <video *ngIf="videoSrc" [src]="videoSrc" autoplay muted loop playsinline [class.hiding]="hidingMedia()" [style.object-position]="videoObjectPosition"></video>
+        <div *ngIf="imageSrcs.length > 1" class="slideshow">
+          <img class="slide slide-back" [src]="imageSrcs[1]" draggable="false" />
+          <img class="slide slide-front" [src]="imageSrcs[0]" draggable="false" />
+        </div>
       </div>
 
       <div class="dialog-text" *ngIf="ready() && !closing()">
         <h2 class="dialog-title">{{ dialogTitle }}</h2>
-        <p class="dialog-desc">{{ dialogDesc }}</p>
+        <p class="dialog-desc" [innerHTML]="dialogDesc"></p>
       </div>
     </div>
   `,
@@ -98,6 +104,8 @@ const TIMING = { collapse: 750 };
       overflow: hidden;
       pointer-events: auto;
       box-shadow: none;
+      box-sizing: border-box;
+      padding: 8px;
 
       /* Initial: card's visual size at scale(1.8) */
       width:  324px;  /* 180 * 1.8 */
@@ -110,13 +118,24 @@ const TIMING = { collapse: 750 };
         gap            750ms $spring-soft,
         box-shadow     300ms ease;
 
-      /* Final dialog size */
+      /* Final dialog size — portrait */
       &.ready {
         width:  600px;
         height: 420px;
         border-radius: 20px;
         gap: 24px;
         box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+      }
+
+      /* Landscape variant — video at top, text below */
+      &.landscape {
+        flex-direction: column;
+
+        &.ready {
+          width:  600px;
+          height: 520px; /* 337px video (16:9) + 183px text */
+          gap:    0;
+        }
       }
 
       &.closing {
@@ -138,11 +157,28 @@ const TIMING = { collapse: 750 };
       height: 100%;
 
       transition:
+        opacity       200ms ease,
         width         750ms $spring-soft,
+        height        750ms $spring-soft,
         border-radius 750ms $spring-soft;
 
+      &.hiding { opacity: 0; }
+
+      /* Portrait ready: left column */
       .dialog.ready & {
         width: 190px;
+        border-radius: 12px;
+      }
+
+      /* Landscape: explicit initial height so height can animate */
+      .dialog.landscape & {
+        height: 443px;
+      }
+
+      /* Landscape ready: full-width 16:9 strip at top */
+      .dialog.landscape.ready & {
+        width:         100%;
+        height:        337px; /* 600 * 9/16 */
         border-radius: 12px;
       }
 
@@ -152,6 +188,42 @@ const TIMING = { collapse: 750 };
         object-fit: cover;
         display: block;
       }
+
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      &.has-video {
+        background: #000;
+      }
+    }
+
+    /* ─── Slideshow ─── */
+    .slideshow {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .slide-front {
+      @keyframes crossfade {
+        0%, 40%  { opacity: 1; }
+        50%, 90% { opacity: 0; }
+        100%     { opacity: 1; }
+      }
+      animation: crossfade 4s ease-in-out infinite;
     }
 
     .image-placeholder {
@@ -179,6 +251,13 @@ const TIMING = { collapse: 750 };
       flex-direction: column;
       gap: 12px;
       animation: textFadeIn 200ms ease 300ms both;
+
+      /* Landscape: full padding, scrollable if text overflows */
+      .dialog.landscape & {
+        padding: 16px 24px 20px;
+        min-height: 0;       /* allow flex item to shrink below content size */
+        overflow-y: auto;
+      }
     }
 
     @keyframes textFadeIn {
@@ -219,19 +298,30 @@ const TIMING = { collapse: 750 };
       font-size: 0.875rem;
       color: var(--color-text-secondary);
       line-height: 1.7;
+
+      a {
+        color: var(--color-text);
+        text-underline-offset: 3px;
+        &:hover { opacity: 0.7; }
+      }
     }
   `]
 })
 export class PolaroidExpandedComponent implements OnInit {
   @Input() caption = '';
   @Input() imageSrc = '';
+  @Input() imageSrcs: string[] = [];
+  @Input() videoSrc = '';
+  @Input() videoObjectPosition = 'center';
+  @Input() landscapeVideo = false;
   @Input() dialogTitle = '';
   @Input() dialogDesc = '';
 
   readonly closed       = output<void>();
   readonly closingStart = output<void>();
-  readonly ready   = signal(false);
-  readonly closing = signal(false);
+  readonly ready        = signal(false);
+  readonly closing      = signal(false);
+  readonly hidingMedia  = signal(false);
 
   ngOnInit() {
     // single RAF so the browser paints the initial (small) state first
@@ -242,9 +332,20 @@ export class PolaroidExpandedComponent implements OnInit {
 
   close() {
     if (this.closing()) return;
-    this.ready.set(false);   // triggers width/height/border-radius back to initial values
-    this.closing.set(true);
-    this.closingStart.emit(); // parent starts card fly-back immediately
+
+    if (this.videoSrc || this.imageSrcs.length > 0) {
+      // Phase 1: fade media out, then spring the card back
+      this.hidingMedia.set(true);
+      setTimeout(() => this.doClose(), 220);
+    } else {
+      this.doClose();
+    }
+  }
+
+  private doClose() {
+    this.ready.set(false);    // springs dialog back to card footprint
+    this.closing.set(true);   // fades dialog out
+    this.closingStart.emit(); // parent card starts fly-back simultaneously
     setTimeout(() => this.closed.emit(), TIMING.collapse);
   }
 

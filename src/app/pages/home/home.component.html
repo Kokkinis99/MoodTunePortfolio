@@ -20,9 +20,8 @@
 
     <div class="header-bottom">
       <p class="site-desc">
-        Learning Angular and Ionic by building something real. Log how you feel —
-        MoodTune picks a Spotify playlist to match. It never shipped, but
-        everything on this page works.
+        Learning Angular and Ionic by building something real.
+        Log how you feel, MoodTune picks a Spotify playlist to match.
       </p>
     </div>
 
@@ -46,169 +45,106 @@
       <div class="component-col">
         <p class="component-label">Save your streak</p>
         <app-broken-streak-demo [initialMood]="currentMood"></app-broken-streak-demo>
-        <p class="component-desc">
-          Tap the card 7 times to save your MoodWeek streak. Each tap fires
-          30 CSS particles — cos()/sin() radial dispersion, no canvas.
-        </p>
       </div>
 
     </div>
 
-    <!-- ===== ANALYSIS ===== -->
-    <section class="analysis-section">
+    <!-- ===== PLAYGROUND ===== -->
+    <section class="playground-section">
 
-      <div class="analysis-grid">
+      <!-- sticky notes + polaroids flat in the same overlay -->
 
-        <div class="analysis-col">
-          <p class="col-heading">What I learned</p>
+      <app-sticky-note
+        text="This is a little playground for the app. I never got to completing it since life got in the way. But feel free to play around!"
+        color="yellow"
+        [rotation]="-3"
+      ></app-sticky-note>
 
-          <div class="analysis-item">
-            <p class="item-title">Spotify PKCE OAuth</p>
-            <p class="item-desc">Auth-code-with-PKCE — a code verifier generated client-side, SHA-256 hashed, exchanged for an access token. No backend secret, no server needed.</p>
-          </div>
+      <app-sticky-note
+        text="If you have any questions, thoughts, ideas, feel free to reach out over at hello@kokkin.is!"
+        color="pink"
+        [rotation]="2"
+      ></app-sticky-note>
 
-          <div class="analysis-item">
-            <p class="item-title">Firebase + Firestore</p>
-            <p class="item-desc">First time setting up a NoSQL database from scratch — mood history, streak data, user profiles. Also the first time setting up a Firebase project.</p>
-          </div>
+      <app-sticky-note
+        text="The app was built with Angular and Ionic. The data is stored in Firebase Firestore. The music is powered by the Spotify API."
+        color="blue"
+        [rotation]="-1"
+      ></app-sticky-note>
 
-          <div class="analysis-item">
-            <p class="item-title">Spotify Web API</p>
-            <p class="item-desc">Track search, playlist creation, auth scopes. Plus the Web Playback SDK so playback stays inside the app — no redirecting out to Spotify.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">ReccoBeats</p>
-            <p class="item-desc">A recommendation engine scored on mood–audio feature correlations. First time consuming an API I didn't write and had to properly understand.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">Angular + Ionic patterns</p>
-            <p class="item-desc">Standalone components, OnPush change detection, NgZone, CDK Drag-Drop — most of this was new territory when the project started.</p>
-          </div>
-
-        </div>
-
-        <div class="analysis-col">
-          <p class="col-heading">What I found interesting</p>
-
-          <div class="analysis-item">
-            <p class="item-title">Spring animations</p>
-            <p class="item-desc">The calendar expand/collapse uses a <code>linear()</code> spring curve — controlled overshoot that makes the motion feel physical rather than mechanical. Getting it right took longer than the rest of the calendar.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">Mood theming</p>
-            <p class="item-desc">One CSS variable on <code>:root</code>. The whole app recolours in a single frame — every surface, every accent, every gradient responds immediately.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">CSS particles</p>
-            <p class="item-desc"><code>cos()</code>/<code>sin()</code> for radial dispersion, per-particle custom properties for angle and distance. 30 particles per burst, no canvas, no library.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">MoodWeek streaks</p>
-            <p class="item-desc">Miss a day — the broken streak modal fires. Tap the card 7 times to save it, each tap revealing more of the mood image underneath the grayscale overlay.</p>
-          </div>
-
-          <div class="analysis-item">
-            <p class="item-title">FLIP animations</p>
-            <p class="item-desc">Polaroid expand uses reverse-FLIP — measure the final rect, apply a transform to jump to the start position, then clear it so the browser interpolates back.</p>
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- Sticky notes scattered within the section -->
-      <div class="sticky-notes-layer">
-        <app-sticky-note
-          emoji="📅"
-          text="The spring overshoot on expand took longer than everything else combined. OnPush + NgZone finally got it to 60 fps."
-          color="yellow"
-          [rotation]="-3"
-        ></app-sticky-note>
-
-        <app-sticky-note
-          emoji="🔥"
-          text="30 particles per tap. cos()/sin(), no canvas. Definitely overkill. Completely worth it."
-          color="pink"
-          [rotation]="2"
-        ></app-sticky-note>
-
-        <app-sticky-note
-          emoji="🎨"
-          text="One CSS variable swap — the whole app recolours in a single frame."
-          color="blue"
-          [rotation]="-1"
-        ></app-sticky-note>
-      </div>
-
-      <!-- Polaroids — in the app, draggable -->
-      <div class="polaroid-zone">
-
-        <app-polaroid-card
-          caption="spotify login"
-          dialogTitle="PKCE OAuth flow"
-          dialogDesc="No passwords stored. MoodTune uses Spotify's PKCE flow — a code verifier is generated client-side, SHA-256 hashed, and exchanged for access tokens. The whole dance happens on-device with no backend secret."
-          [rotation]="-6"
-          [initialX]="0"
-          [initialY]="20"
-        ></app-polaroid-card>
-
-        <app-polaroid-card
-          caption="log a mood"
-          dialogTitle="Mood entry"
-          dialogDesc="One tap to log. Four moods — happy, calm, sad, angry — each with its own color palette that ripples through the whole app immediately via a single CSS variable swap."
+      <app-polaroid-card
+          caption="Dynamic app icon"
+          thumbnailSrc="images/thumbnails/app-icon.png"
+          dialogTitle="Dynamic app icon"
+          dialogDesc="If you haven't guessed it already, Duolingo was a pretty big inspiration for my app. But it wasn't about streaks and dopamine, moreso about little features that always felt like 'aha!' moments. One of them is the dynamic app icon. Each time you enter a mood, the app icon changes to that mood you entered. Excuse the bad quality, I recorded this directly on messenger to send it to a friend haha."
+          videoSrc="videos/app-icon.mp4"
+          videoObjectPosition="right"
           [rotation]="4"
-          [initialX]="185"
-          [initialY]="65"
-        ></app-polaroid-card>
-
-        <app-polaroid-card
-          caption="your playlist"
-          dialogTitle="Mood → music"
-          dialogDesc="After logging, ReccoBeats scores your mood against a track catalogue and returns a ranked playlist. Spotify playback starts in-app via the Web Playback SDK — no leaving the app."
-          [rotation]="-3"
-          [initialX]="370"
+          [xPct]="20.2"
           [initialY]="15"
         ></app-polaroid-card>
 
         <app-polaroid-card
-          caption="how we pick songs"
-          dialogTitle="ReccoBeats API"
-          dialogDesc="A recommendation engine trained on mood–audio feature correlations. Valence, energy, and danceability are weighted differently per mood — high valence + high energy for happy, low valence + low energy for sad."
-          [rotation]="2"
-          [initialX]="555"
-          [initialY]="55"
+          caption="From mood to music"
+          thumbnailSrc="images/thumbnails/mood-music.png"
+          dialogTitle="From mood to music"
+          dialogDesc="This is another one of my favorite 'aha!' moments in the app. Instant Spotify playlist generation. You enter your mood, and in the background we transform the mood to ReccoBeats variables. Acousticness, danceability, energy, valence, and more are calculated and used to generate a playlist that matches your mood perfectly. At the same time we pass your favorite songs to the API for reccomendations. This way you have an instant personalized playlist based on what you already like to listen to. Or so I thought... Reccobeats is still a WIP hahaha but I'm still proud of this feature. By the way, in order for all of this to work, the user would need to login through Spotify. That means PKCE, handshakes, and more complex stuff that once implemented felt like magic. We can agree however, a little loading screen would've been nice haha."
+          videoSrc="videos/playlist-generation.mp4"
+          [landscapeVideo]="true"
+          [rotation]="-3"
+          [xPct]="8.7"
+          [initialY]="95"
         ></app-polaroid-card>
 
         <app-polaroid-card
           caption="moodweek"
+          thumbnailSrc="images/thumbnails/moodweek.png"
           dialogTitle="MoodWeek streaks"
-          dialogDesc="Log every day for a week and complete a MoodWeek. Miss a day and the broken streak modal fires — tap the card 7 times to save it, or skip and start fresh. Streak data lives in Firebase Firestore."
+          dialogDesc="You caught me, no video here, I never got to implementing the MoodWeek feature hahah. But I did design it, and I also implemented the way it works on firestore. The idea is simple, you log every day for a week and complete a MoodWeek. What you get in return is a summary of your logged moods this week, and a summary playlist! You also get a little badge :)"
+          [imageSrcs]="['images/moodweek/first.png', 'images/moodweek/second.png']"
           [rotation]="7"
-          [initialX]="740"
-          [initialY]="35"
+          [xPct]="26.6"
+          [initialY]="285"
         ></app-polaroid-card>
 
         <app-polaroid-card
-          caption="broken streak"
-          dialogTitle="The broken streak modal"
-          dialogDesc="The grayscale overlay shrinks with each of 7 taps, revealing the mood image underneath. Each tap fires 30 CSS particles — cos()/sin() radial dispersion, per-particle custom properties, no canvas."
+          caption="Save your streak!"
+          thumbnailSrc="images/thumbnails/save-streak.png"
+          dialogTitle="Save your streak!"
+          [dialogDesc]="saveStreakDesc"
+          videoSrc="videos/save-streak-final.mp4"
           [rotation]="-5"
-          [initialX]="900"
-          [initialY]="70"
+          [xPct]="38.1"
+          [initialY]="335"
         ></app-polaroid-card>
 
-      </div>
+        <app-polaroid-card
+          caption="Streaks, streaks, streaks!"
+          thumbnailSrc="images/thumbnails/streak.png"
+          dialogTitle="Streaks, streaks, streaks!"
+          dialogDesc="I love streaks. I love them in fitness apps, in habit tracking apps, everywhere. It gives me a sense of progress and accomplishment. But what I love more than streaks, is animating them. The way the little happy icon pops up in this clip took me way more than I'd like to admit. But I'm glad I did it."
+          videoSrc="videos/streak.mp4"
+          [rotation]="-6"
+          [xPct]="68.7"
+          [initialY]="285"
+        ></app-polaroid-card>
 
-    </section>
+        <app-polaroid-card
+          caption="Beating ionic's navigation"
+          thumbnailSrc="images/thumbnails/ionic.png"
+          dialogTitle="Beating Ionic's navigation"
+          dialogDesc="Little tricks like this one are my favorite part of building applications. Ionic doesn't make it easy avoiding it's default navigation system. But what you could do is cover everything up with a circle fade it to the page background color, and once it's faded, instantly transition to the new page. Then fade the data from the new page in. The result is a smooth, custom transition that feels native."
+          videoSrc="videos/route-animation.mp4"
+          [rotation]="3"
+          [xPct]="78.4"
+          [initialY]="18"
+        ></app-polaroid-card>
+
+    </section><!-- end playground -->
 
     <!-- ===== FIGMA PLAYGROUND ===== -->
     <section class="figma-section">
-      <p class="component-label">Design file</p>
+      <p class="component-label">Oh, by the way, I hand-designed everything in Figma:</p>
       <div class="figma-embed">
         <iframe
           [src]="figmaSrc"

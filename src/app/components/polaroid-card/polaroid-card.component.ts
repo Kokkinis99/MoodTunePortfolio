@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   Input,
+  OnInit,
   ViewChild,
   OnDestroy,
   ChangeDetectorRef,
@@ -9,6 +10,7 @@ import {
 import { CdkDrag, CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
 import { NgIf } from '@angular/common';
 import { PolaroidExpandedComponent } from './polaroid-expanded.component';
+import { nextZ } from '../z-order';
 
 /* ─────────────────────────────────────────────────────────
  * ANIMATION STORYBOARD
@@ -26,14 +28,6 @@ const MAX_TILT    = 12;
 const TILT_FACTOR = 20;
 const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0.961 28%, 1.025 37%, 1.036 48%, 1.016 62%, 1.004 78%, 1)';
 
-// Shared z-index counter — cycles within [200, 260] so it never grows unbounded
-// (above sticky-notes-layer at z-index: 100, well below expanded dialog at 9000)
-let zCounter = 200;
-function nextZ(): number {
-  zCounter = zCounter >= 260 ? 200 : zCounter + 1;
-  return zCounter;
-}
-
 @Component({
   selector: 'app-polaroid-card',
   standalone: true,
@@ -41,7 +35,7 @@ function nextZ(): number {
   template: `
     <div class="drag-wrapper"
       cdkDrag
-      [cdkDragFreeDragPosition]="{ x: initialX, y: initialY }"
+      [cdkDragFreeDragPosition]="dragPos"
       (cdkDragStarted)="onDragStarted()"
       (cdkDragMoved)="onDragMoved($event)"
       (cdkDragEnded)="onDragEnded($event)">
@@ -68,6 +62,10 @@ function nextZ(): number {
     <app-polaroid-expanded
       *ngIf="isExpanded"
       [imageSrc]="imageSrc"
+      [imageSrcs]="imageSrcs"
+      [videoSrc]="videoSrc"
+      [videoObjectPosition]="videoObjectPosition"
+      [landscapeVideo]="landscapeVideo"
       [dialogTitle]="dialogTitle"
       [dialogDesc]="dialogDesc"
       [caption]="caption"
@@ -166,15 +164,22 @@ function nextZ(): number {
     }
   `]
 })
-export class PolaroidCardComponent implements OnDestroy {
+export class PolaroidCardComponent implements OnInit, OnDestroy {
   @Input() caption = '';
   @Input() thumbnailSrc = '';
   @Input() imageSrc = '';
+  @Input() videoSrc = '';
+  @Input() videoObjectPosition = 'center';
+  @Input() landscapeVideo = false;
   @Input() dialogTitle = '';
   @Input() dialogDesc = '';
   @Input() rotation = 0;
-  @Input() initialX = 0;
+  @Input() initialX = 0;  // fallback px value
   @Input() initialY = 0;
+  @Input() xPct = -1;     // percentage of viewport width (0–100); overrides initialX when set
+  @Input() imageSrcs: string[] = [];
+
+  dragPos = { x: 0, y: 0 };
 
   @ViewChild('cardEl') private cardEl!: ElementRef<HTMLDivElement>;
   @ViewChild(CdkDrag)  private cdkDrag!: CdkDrag;
@@ -193,6 +198,11 @@ export class PolaroidCardComponent implements OnDestroy {
   private handoffTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private cdr: ChangeDetectorRef) {}
+
+  ngOnInit() {
+    const x = this.xPct >= 0 ? Math.round(window.innerWidth * this.xPct / 100) : this.initialX;
+    this.dragPos = { x, y: this.initialY };
+  }
 
   // ── Z-index ─────────────────────────────────────────────
 

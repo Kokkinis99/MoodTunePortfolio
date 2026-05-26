@@ -68,11 +68,13 @@ const MOOD_BG: Record<string, string> = {
 
         <!-- Fixed-height bottom slot so layout never shifts -->
         <div class="bottom-slot">
-          <button
-            class="lets-go-btn"
-            [style.visibility]="savedStreak ? 'visible' : 'hidden'"
-            (click)="reset()"
-          >Let's go!</button>
+          @if (savedStreak) {
+            <button
+              class="lets-go-btn"
+              [style.background]="moodBg[currentMood]"
+              (click)="reset()"
+            >Let's go!</button>
+          }
           <div class="hint" [class.visible]="overlayClicks === 0 && !savedStreak">Tap to save your streak</div>
         </div>
       </div>
@@ -196,6 +198,7 @@ const MOOD_BG: Record<string, string> = {
 
     .bottom-slot {
       height: 48px; /* fixed — button and hint share this slot */
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -206,6 +209,7 @@ const MOOD_BG: Record<string, string> = {
       position: absolute;
       font-size: 0.75rem;
       color: var(--color-text-secondary);
+      text-align: center;
       opacity: 0;
       transition: opacity 0.3s ease;
       pointer-events: none;
@@ -217,17 +221,28 @@ const MOOD_BG: Record<string, string> = {
       padding: 12px 32px;
       border-radius: 8px;
       border: none;
-      background: var(--color-mood-happy);
       color: white;
+      font-family: 'Quicksand', sans-serif;
       font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
+
+      opacity: 1;
+      transform: scale(1);
+      filter: blur(0);
+      transition: opacity 350ms ease, transform 350ms ease, filter 350ms ease;
+
+      @starting-style {
+        opacity: 0;
+        transform: scale(0.95);
+        filter: blur(4px);
+      }
 
       @keyframes squashBtn {
         from { transform: scale(1.02); }
         to   { transform: scale(0.98); }
       }
-      animation: squashBtn 600ms ease-in-out infinite alternate;
+      animation: squashBtn 600ms ease-in-out 350ms infinite alternate;
     }
   `]
 })

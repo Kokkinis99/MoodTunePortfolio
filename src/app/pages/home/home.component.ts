@@ -48,6 +48,14 @@ export class HomeComponent implements OnInit {
   readonly moodStrip = MOOD_STRIP;
   currentMood: Mood = 'happy';
   readonly figmaSrc: SafeResourceUrl;
+  readonly saveStreakDesc =
+    `This little interaction got featured in ` +
+    `<a href="https://www.joshwcomeau.com/email/wham-launch-009-student-showcase/" ` +
+    `target="_blank" rel="noopener">Josh W. Comeau's newsletter</a>! ` +
+    `There's something about using gamification in apps that just feels good. ` +
+    `Sure it could've been a button, sure it could've been a payment, but none ` +
+    `of these options would make me smile the way smashing my finger into the ` +
+    `screen does.`;
 
   constructor(private sanitizer: DomSanitizer) {
     this.figmaSrc = this.sanitizer.bypassSecurityTrustResourceUrl(FIGMA_EMBED_URL);

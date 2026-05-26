@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { CdkDrag, CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
+import { nextZ } from '../z-order';
 
 const MAX_TILT = 15;
 const TILT_FACTOR = 25;
@@ -41,10 +42,15 @@ const TILT_FACTOR = 25;
       min-height: 120px;
       box-shadow: 2px 3px 10px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
       transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(1);
+
+      @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: 12px;
+      }
       display: flex;
       flex-direction: column;
       gap: 8px;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Quicksand', sans-serif;
       transition:
         box-shadow var(--duration-slow) var(--ease-out-quad),
         transform var(--ease-duration) var(--ease-spring);
@@ -57,9 +63,24 @@ const TILT_FACTOR = 25;
       box-shadow: 8px 12px 32px rgba(0,0,0,0.22), 0 0 1px rgba(0,0,0,0.1);
     }
 
-    .sticky-body { font-size: 0.8rem; line-height: 1.5; color: rgba(0,0,0,0.75); font-weight: 500; }
+    .sticky-body {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: rgba(0,0,0,0.75);
+      font-weight: 500;
 
-    .color-yellow { background: #fef08a; }
+      // Full-width underline per text line — spans the whole container,
+      // so it's always wider than the text itself
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent             0px,
+        transparent             calc(1lh - 1px),
+        rgba(0, 0, 0, 0.18)    calc(1lh - 1px),
+        rgba(0, 0, 0, 0.18)    1lh
+      );
+    }
+
+    .color-yellow { background: #fedcaf; }
     .color-pink   { background: #fda4af; }
     .color-purple { background: #c4b5fd; }
     .color-blue   { background: #93c5fd; }
@@ -76,6 +97,12 @@ export class StickyNoteComponent {
   @ViewChild('stickyEl') private stickyEl!: ElementRef<HTMLDivElement>;
 
   isDragging = false;
+
+  constructor(private host: ElementRef<HTMLElement>) {}
+
+  private bringToFront() {
+    this.host.nativeElement.style.zIndex = String(nextZ());
+  }
 
   get stickyClasses(): string {
     return `color-${this.color}${this.isDragging ? ' grabbed' : ''}`;
@@ -94,6 +121,7 @@ export class StickyNoteComponent {
   private rafId: number | null = null;
 
   onDragStarted() {
+    this.bringToFront();
     this.isDragging = true;
     this.vx = 0;
     this.vy = 0;

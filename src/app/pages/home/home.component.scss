@@ -99,9 +99,7 @@
     width: 64px;
     height: 64px;
     object-fit: contain;
-    // Desaturate, reduce contrast slightly — keeps tonal range and visible detail
-    // without the harsh darks or blown-out whites that brightness(2) causes
-    filter: grayscale(1) brightness(1.8) contrast(0.65);
+    filter: drop-shadow(0 0 5px rgb(0 0 0 / 25%));
     user-select: none;
     display: block;
 
@@ -149,6 +147,7 @@
   }
 
   .component-desc {
+    text-align: center;
     font-size: var(--font-size-12);
     color: var(--color-text-secondary);
     max-width: 280px;
@@ -157,102 +156,37 @@
 }
 
 // =============================================================================
-// ANALYSIS SECTION
+// PLAYGROUND — sticky notes + polaroid zone
 // =============================================================================
 
-.analysis-section {
-  position: relative;
-  width: 100%;
-}
-
-.analysis-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  padding-bottom: 80px; // breathing room before polaroid zone
-}
-
-.analysis-col {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-
-  .col-heading {
-    font-size: var(--font-size-12);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--color-hover);
-  }
-}
-
-.analysis-item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-block: 16px;
-  border-bottom: 1px solid var(--color-hover);
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .item-title {
-    font-size: var(--font-size-14);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text);
-    letter-spacing: -0.01em;
-  }
-
-  .item-desc {
-    font-size: var(--font-size-12);
-    color: var(--color-text-secondary);
-    line-height: 1.65;
-
-    code {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 0.9em;
-      background: var(--color-hover);
-      padding: 1px 5px;
-      border-radius: 3px;
-      color: var(--color-text);
-    }
-  }
-}
-
-// =============================================================================
-// STICKY NOTES — float within analysis-section
-// =============================================================================
-
-.sticky-notes-layer {
+.playground-section {
   position: absolute;
   inset: 0;
-  pointer-events: none;
-  // 150: above resting polaroids (no z-index), below grabbed/clicked (200+)
-  z-index: 150;
-
-  app-sticky-note {
-    pointer-events: all;
-    position: absolute;
-
-    &:nth-child(1) { top: 40px;  left: 44%; }  // yellow — center-top, between columns
-    &:nth-child(2) { top: 260px; right: 2%;  }  // pink   — right side, mid
-    &:nth-child(3) { top: 160px; left: 8%;   }  // blue   — left side, mid
-  }
+  pointer-events: none; // pass-through so demos underneath stay clickable
+  z-index: 100;
+  overflow: visible;
 }
 
 // =============================================================================
-// POLAROID ZONE
+// PLAYGROUND CONTENTS — sticky notes + polaroid cards, flat in one layer
 // =============================================================================
 
-.polaroid-zone {
-  position: relative;
-  width: 100%;
-  height: 420px; // fixed — cards overlap freely, footer unaffected
-  overflow: visible;
+.playground-section {
+
+  // Both element types need pointer-events re-enabled (inherited none from parent)
+  app-sticky-note,
+  app-polaroid-card {
+    pointer-events: all;
+  }
+
+  // Notes are absolutely positioned; cards position themselves via CdkDrag transform
+  app-sticky-note {
+    position: absolute;
+    // nth-of-type works because app-sticky-note and app-polaroid-card are different tags
+    &:nth-of-type(1) { top: 350px; left: 13.7%; }  // yellow
+    &:nth-of-type(2) { top: 265px; left: 80.7%; }  // pink
+    &:nth-of-type(3) { top:  68px; left: 65.0%; }  // blue
+  }
 }
 
 // =============================================================================
