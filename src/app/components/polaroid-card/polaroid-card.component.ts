@@ -158,6 +158,7 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
     }
 
     .caption-text {
+      text-align: center;
       font-style: italic;
       font-size: 0.68rem;
       color: #999;
