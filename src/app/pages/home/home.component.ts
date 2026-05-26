@@ -24,7 +24,7 @@ const MOOD_SRCS = [
   'images/main-moods/calm.png',
 ];
 
-// 64px image + 32px gap = 96px per item. 32 items = 3072px — covers any viewport.
+// 64px image + 32px gap = 96px per item. 17 items = 1632px — covers any viewport.
 export const MOOD_STRIP = Array.from({ length: 17 }, (_, i) => MOOD_SRCS[i % 4]);
 
 const FIGMA_EMBED_URL =
