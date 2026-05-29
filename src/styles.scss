@@ -234,9 +234,11 @@ body.grabbing * {
   padding: 0;
   box-sizing: border-box;
 
+  // Firefox
   scrollbar-width: thin;
   scrollbar-color: var(--color-text-link) transparent;
 }
+
 
 html,
 body {

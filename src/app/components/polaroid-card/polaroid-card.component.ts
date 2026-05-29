@@ -64,6 +64,7 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
       [imageSrc]="imageSrc"
       [imageSrcs]="imageSrcs"
       [videoSrc]="videoSrc"
+      [videoMuted]="videoMuted"
       [videoObjectPosition]="videoObjectPosition"
       [landscapeVideo]="landscapeVideo"
       [dialogTitle]="dialogTitle"
@@ -80,6 +81,7 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   @Input() thumbnailSrc = '';
   @Input() imageSrc = '';
   @Input() videoSrc = '';
+  @Input() videoMuted = false;
   @Input() videoObjectPosition = 'center';
   @Input() landscapeVideo = false;
   @Input() dialogTitle = '';
