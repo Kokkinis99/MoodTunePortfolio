@@ -61,7 +61,7 @@
   --ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
 
   // Easing: spring (for bounce/overshoot)
-  --ease-duration: 500ms;
+  --ease-duration: 250ms;
   --ease-spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%, 1.066 37%, 1.08 45.5%, 1.07 53%, 1.011 78.3%, 1);
 
   --ease-duration-soft: 750ms;
@@ -126,6 +126,106 @@
 }
 
 // =============================================================================
+// BIBATA ICE CURSORS — custom cursor overlay
+// Native cursor is hidden everywhere with cursor:none. --cursor signals the
+// intended cursor type to the JS overlay in app.ts, which renders the Bibata
+// SVG and animates scale on click. Custom properties inherit down the DOM so
+// child elements automatically pick up the right type from their nearest ancestor.
+// !important ensures Angular's view-encapsulated attribute selectors (0,1,1)
+// cannot re-enable the native cursor.
+// =============================================================================
+
+html {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: default;
+}
+
+a,
+button,
+[role='button'],
+[type='submit'],
+[type='button'],
+[type='reset'],
+[tabindex]:not([tabindex='-1']),
+label[for],
+select,
+summary {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: pointer;
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='submit']):not([type='button']):not([type='reset']),
+textarea,
+[contenteditable='true'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: text;
+}
+
+[disabled],
+:disabled,
+[aria-disabled='true'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: not-allowed;
+}
+
+[draggable='true'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: grab;
+}
+
+// Add class="grabbing" to <body> on drag start to apply globally
+body.grabbing,
+body.grabbing * {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: grabbing;
+}
+
+[style*='cursor:move'],
+[style*='cursor: move'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: move;
+}
+
+[style*='cursor:ew-resize'],
+[style*='cursor: ew-resize'],
+[style*='cursor:col-resize'],
+[style*='cursor: col-resize'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: ew-resize;
+}
+
+[style*='cursor:ns-resize'],
+[style*='cursor: ns-resize'],
+[style*='cursor:row-resize'],
+[style*='cursor: row-resize'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: ns-resize;
+}
+
+[style*='cursor:nwse-resize'],
+[style*='cursor: nwse-resize'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: nwse-resize;
+}
+
+[style*='cursor:nesw-resize'],
+[style*='cursor: nesw-resize'] {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: nesw-resize;
+}
+
+// =============================================================================
 // RESET & BASE
 // =============================================================================
 
@@ -146,6 +246,7 @@ body {
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
+  user-select: none;
   transition:
     background-color var(--duration-slow) ease,
     color var(--duration-slow) ease;
@@ -236,4 +337,32 @@ button {
       calc(-50% + sin(var(--angle)) * var(--distance))
     ) scale(0.5);
   }
+}
+
+// Cursor click dust particles
+@keyframes dust-move {
+  to { transform: translate(var(--dx), var(--dy)); }
+}
+
+@keyframes dust-fade {
+  to { opacity: 0; }
+}
+
+.cursor-dust {
+  position: fixed;
+  width: var(--dd, 5px);
+  height: var(--dd, 5px);
+  // center on spawn point; composed with transform in keyframe
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: hsl(0 0% 80% / 0.65);
+  pointer-events: none;
+  z-index: 99998;
+  animation:
+    dust-move  450ms ease-out forwards,
+    dust-fade  300ms 150ms ease-in forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dust { display: none; }
 }

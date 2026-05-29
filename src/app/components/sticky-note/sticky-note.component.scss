@@ -1,0 +1,64 @@
+@use 'cursors' as c;
+
+:host { display: block; }
+
+.drag-wrapper {
+  display: inline-block;
+  @include c.grab;
+  position: relative;
+  z-index: 0;
+}
+.drag-wrapper:active { @include c.grabbing; }
+.drag-wrapper.cdk-drag-dragging { z-index: 1000; }
+
+.sticky {
+  padding: 16px;
+  border-radius: 2px;
+  width: 200px;
+  min-height: 120px;
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1);
+  transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(1);
+
+  @supports (corner-shape: squircle) {
+    corner-shape: squircle;
+    border-radius: 12px;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: 'Quicksand', sans-serif;
+  transition:
+    box-shadow var(--duration-slow) var(--ease-out-quad),
+    transform var(--ease-duration) var(--ease-spring);
+  user-select: none;
+  will-change: transform;
+}
+
+.sticky.grabbed {
+  transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(1.15);
+  box-shadow: 8px 12px 32px rgba(0,0,0,0.22), 0 0 1px rgba(0,0,0,0.1);
+}
+
+.sticky-body {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: rgba(0,0,0,0.75);
+  font-weight: 500;
+
+  // Full-width underline per text line — spans the whole container,
+  // so it's always wider than the text itself
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent             0px,
+    transparent             calc(1lh - 1px),
+    rgba(0, 0, 0, 0.18)    calc(1lh - 1px),
+    rgba(0, 0, 0, 0.18)    1lh
+  );
+}
+
+.color-yellow { background: #fedcaf; }
+.color-pink   { background: #fda4af; }
+.color-purple { background: #c4b5fd; }
+.color-blue   { background: #93c5fd; }
+.color-green  { background: #86efac; }
+.color-orange { background: #fdba74; }

@@ -1,0 +1,236 @@
+@use 'cursors' as c;
+
+:host {
+  display: block;
+  position: relative;
+  z-index: 10;
+  width: 320px;
+  height: 150px;
+  overflow: visible;
+  user-select: none;
+}
+
+.container {
+  width: 320px;
+  height: 150px;
+  border-radius: 0 0 24px 24px;
+  background: var(--mood-color, #78b853);
+  box-shadow: 0 4px 0 var(--mood-shade, #5a9438), 0 8px 24px rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+  @include c.pointer;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    height 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 20;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    top: -60px;
+    right: -40px;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    bottom: -30px;
+    left: -20px;
+    pointer-events: none;
+  }
+
+  &.expanded {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 310px;
+    box-shadow:
+      0 4px 0 var(--mood-shade, #5a9438),
+      0 20px 16px -8px rgba(0,0,0,0.28);
+  }
+}
+
+.data-container {
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s ease;
+  transform-origin: center;
+
+  &.animated { transform: scale(0.98); }
+}
+
+.month-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.month {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+}
+
+.chevron {
+  width: 20px;
+  height: 20px;
+  stroke: white;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s ease;
+
+  &.rotated { transform: rotate(-180deg); }
+}
+
+.calendar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 30px);
+  column-gap: 14px;
+  row-gap: 8px;
+}
+
+.days-row {
+  row-gap: 0;
+}
+
+.day {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+
+  &.current-day {
+    color: var(--mood-color);
+    background: white;
+    border-radius: 20px;
+    padding: 2px 4px;
+  }
+}
+
+.date-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  position: relative;
+  z-index: 0;
+  @include c.pointer;
+  border-radius: 50%;
+
+  &.current-date,
+  &.current-date-expanded {
+    color: var(--mood-color);
+
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: white;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &.today:not(.current-date):not(.current-date-expanded) {
+    &::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,0.6);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+  &.disabled-date {
+    color: rgba(255,255,255,0.3);
+    pointer-events: none;
+  }
+
+  &.invisible {
+    visibility: hidden;
+  }
+
+  &.background-container-circle::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &.color-happy::before { background: #78b853; }
+  &.color-sad::before   { background: #a18fff; }
+  &.color-calm::before  { background: #5c9ead; }
+  &.color-angry::before { background: #ff3f52; }
+  &.color-no-entries::before { background: rgba(255,255,255,0.2); }
+  &.background-container-circle.outline::before { border: 1px dashed rgba(255,255,255,0.85); }
+}
+
+.month-navigation-container {
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+
+  .nav-arrow {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    @include c.pointer;
+    opacity: 0.8;
+
+    &:hover { opacity: 1; }
+    &.disabled { opacity: 0.25; @include c.default; pointer-events: none; }
+  }
+}

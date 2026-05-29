@@ -1,0 +1,91 @@
+@use 'cursors' as c;
+
+:host {
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+.drag-wrapper {
+  display: inline-block;
+  @include c.grab;
+  position: absolute;
+  &:active { @include c.grabbing; }
+}
+
+$spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%, 1.066 37%, 1.08 45.5%, 1.07 53%, 1.011 78.3%, 1);
+
+.card {
+  background: #fff;
+  border-radius: 4px;
+  padding: 10px 10px 0 10px;
+  width: 180px;
+  box-shadow: 0 2px 0 #d8d8d8, 0 6px 24px rgba(0,0,0,0.13);
+  transform: rotate(var(--rotation, 0deg)) scale(1);
+  transition: box-shadow 200ms ease, transform 500ms $spring;
+  user-select: none;
+  will-change: transform;
+
+  &.grabbed {
+    @include c.grabbing;
+    box-shadow: 0 2px 0 #d8d8d8, 0 20px 56px rgba(0,0,0,0.26);
+    transform: rotate(calc(var(--rotation, 0deg) + var(--tilt, 0deg))) scale(1.12);
+    transition: box-shadow 120ms ease, transform 120ms ease;
+  }
+
+  &:not(.grabbed) {
+    @include c.pointer;
+    transform: rotate(calc(var(--rotation, 0deg) + var(--tilt, 0deg))) scale(1);
+    &:hover {
+      transform: rotate(calc(var(--rotation, 0deg) + var(--tilt, 0deg))) scale(1.04);
+      box-shadow: 0 2px 0 #d8d8d8, 0 12px 32px rgba(0,0,0,0.18);
+    }
+  }
+}
+
+.image-area {
+  width: 160px;
+  height: 160px;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #f0f0f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+
+  span {
+    font-style: italic;
+    font-size: 0.7rem;
+    color: #bbb;
+    text-align: center;
+    padding: 12px;
+    line-height: 1.4;
+  }
+}
+
+.caption-area {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.caption-text {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.68rem;
+  color: #999;
+}

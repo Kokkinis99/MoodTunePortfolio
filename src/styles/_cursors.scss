@@ -1,0 +1,23 @@
+@mixin pointer {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: pointer;
+}
+
+@mixin grab {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: grab;
+}
+
+@mixin grabbing {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: grabbing;
+}
+
+@mixin default {
+  // stylelint-disable-next-line declaration-no-important
+  cursor: none !important;
+  --cursor: default;
+}
