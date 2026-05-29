@@ -106,6 +106,7 @@ export class App implements OnDestroy {
       // hides cursor: none, and freezes our custom cursor at the last position.
       const dragstart = (e: DragEvent) => e.preventDefault();
 
+
       const click = (e: MouseEvent) => {
         const dust: HTMLElement[] = [];
 

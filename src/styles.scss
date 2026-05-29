@@ -339,6 +339,14 @@ button {
   }
 }
 
+// Hide custom cursor over Figma embed — iframe captures pointer events so our
+// cursor would freeze visibly. :hover still propagates to ancestor divs even
+// when the mouse is inside a child iframe, so this works without any JS.
+body:has(.figma-embed:hover) .cursor-wrap {
+  // stylelint-disable-next-line declaration-no-important
+  opacity: 0 !important;
+}
+
 // Cursor click dust particles
 @keyframes dust-move {
   to { transform: translate(var(--dx), var(--dy)); }
