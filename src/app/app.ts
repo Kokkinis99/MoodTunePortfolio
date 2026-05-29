@@ -84,8 +84,24 @@ export class App implements OnDestroy {
           apply(detectType(lastX, lastY));
         });
       };
-      const leave     = () => { wrap.style.opacity = '0'; };
-      const enter     = () => { wrap.style.opacity = '1'; };
+      const leave = () => { wrap.style.opacity = '0'; };
+      const enter = (e: MouseEvent) => {
+        wrap.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        wrap.style.opacity   = '1';
+        apply(detectType(e.clientX, e.clientY));
+      };
+
+      // mouseover fires as elements render under a stationary mouse on page load,
+      // unlike mouseenter which doesn't fire if the cursor was already in the viewport.
+      // Remove itself after first call — only needed to bootstrap the initial position.
+      const revealOnce = (e: MouseEvent) => {
+        lastX = e.clientX;
+        lastY = e.clientY;
+        wrap.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        wrap.style.opacity   = '1';
+        apply(detectType(e.clientX, e.clientY));
+        document.removeEventListener('mouseover', revealOnce);
+      };
       // Prevent native HTML5 drag on links/images — it steals pointer events,
       // hides cursor: none, and freezes our custom cursor at the last position.
       const dragstart = (e: DragEvent) => e.preventDefault();
@@ -118,6 +134,7 @@ export class App implements OnDestroy {
       document.addEventListener('click',      click);
       document.addEventListener('mouseleave', leave);
       document.addEventListener('mouseenter', enter);
+      document.addEventListener('mouseover',  revealOnce);
       document.addEventListener('dragstart',  dragstart);
 
       this.cleanup = () => {
@@ -127,6 +144,7 @@ export class App implements OnDestroy {
         document.removeEventListener('click',      click);
         document.removeEventListener('mouseleave', leave);
         document.removeEventListener('mouseenter', enter);
+        document.removeEventListener('mouseover',  revealOnce);
         document.removeEventListener('dragstart',  dragstart);
       };
     });
