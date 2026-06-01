@@ -53,7 +53,6 @@ const MOOD_SHADE: Record<string, string> = {
         <div
           class="mood-image-container"
           #moodImageContainer
-          [class.small]="bounceScale"
           [class.saved-streak]="savedStreak"
           [class.idle]="overlayClicks === 0"
           [style.--border-opacity]="borderOpacity"
@@ -105,7 +104,6 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
 
   overlayClicks = 0;
   savedStreak = false;
-  bounceScale = false;
   borderOpacity = 1;
   currentMood: 'happy' | 'sad' | 'angry' | 'calm' = 'happy';
 
@@ -113,7 +111,6 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
   moodBg    = MOOD_BG;
   moodShade = MOOD_SHADE;
 
-  private bounceTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -141,12 +138,7 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
     // 0-based click index, capped at 6 so pitch maxes out at the reveal tap
     this.sound.playStreakTap(this.overlayClicks - 1);
 
-    this.bounceScale = true;
-    if (this.bounceTimeout) clearTimeout(this.bounceTimeout);
-    this.bounceTimeout = setTimeout(() => {
-      this.bounceScale = false;
-      this.cdr.markForCheck();
-    }, 150);
+    this.triggerBounce();
 
     this.createParticles();
 
@@ -224,6 +216,23 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
     }, maxDuration + 200);
   }
 
+  private triggerBounce(): void {
+    const el = this.moodImageContainer?.nativeElement;
+    if (!el) return;
+    // 1. Kill the transition so the snap-back to scale(1) is instant,
+    //    regardless of where the card currently is in its rebound.
+    el.style.transition = 'none';
+    el.classList.remove('small');
+    // 2. Force reflow — browser commits the instant snap to scale(1).
+    void el.offsetWidth;
+    // 3. Restore CSS transition and squash — always starts from scale(1).
+    el.style.transition = '';
+    el.classList.add('small');
+    // 4. Each tap independently schedules its own spring-back.
+    //    No cancel — first one to fire wins; rest are no-ops.
+    setTimeout(() => el.classList.remove('small'), 150);
+  }
+
   onLetsGoClick(): void {
     this.sound.playPopRelease();
     setTimeout(() => {
@@ -242,7 +251,7 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
     this.overlayClicks = 0;
     this.savedStreak = false;
     this.borderOpacity = 1;
-    this.bounceScale = false;
+    this.moodImageContainer?.nativeElement.classList.remove('small');
     setTimeout(() => {
       if (this.moodOverlay?.nativeElement) {
         this.moodOverlay.nativeElement.style.height = '';
@@ -250,7 +259,5 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    if (this.bounceTimeout) clearTimeout(this.bounceTimeout);
-  }
+  ngOnDestroy(): void {}
 }

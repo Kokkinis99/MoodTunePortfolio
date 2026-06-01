@@ -6,6 +6,7 @@
     <div class="header-top">
       <div class="header-nav">
         <a href="https://kokkin.is" class="back-link"
+           (mouseenter)="sound.playHoverOpen()"
            (mousedown)="sound.playPopPress()"
            (click)="sound.playPopRelease()">← kokkin.is</a>
         <app-mute-button />
