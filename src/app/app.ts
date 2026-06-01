@@ -17,6 +17,8 @@ const SILENT_SELECTORS = [
   'app-calendar-demo',
   'app-polaroid-card',
   'app-sticky-note',
+  'app-mute-button',
+  '.back-link',
   '.mood-image-container',  // broken-streak: tap-to-reveal card
   '.mood-switcher',         // broken-streak: mood colour buttons
   '.lets-go-btn',           // broken-streak: reset button

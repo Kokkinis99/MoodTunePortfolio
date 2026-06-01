@@ -31,12 +31,19 @@
   .header-top   { padding-top: 48px;  padding-bottom: 24px; }
   .header-bottom { padding-top: 20px; padding-bottom: 56px; }
 
+  .header-nav {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
   .back-link {
     font-size: var(--font-size-12);
     color: rgba(255, 255, 255, 0.65);
     text-decoration: none;
     letter-spacing: 0.02em;
-    margin-bottom: 20px;
     transition: color 0.15s ease;
     &:hover { color: rgba(255, 255, 255, 0.95); }
   }

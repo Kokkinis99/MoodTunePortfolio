@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SoundService } from '../../services/sound.service';
 import { CalendarDemoComponent } from '../../components/demos/calendar-demo/calendar-demo.component';
 import { BrokenStreakDemoComponent } from '../../components/demos/broken-streak-demo/broken-streak-demo.component';
 import { StickyNoteComponent } from '../../components/sticky-note/sticky-note.component';
 import { PolaroidCardComponent } from '../../components/polaroid-card/polaroid-card.component';
+import { MuteButtonComponent } from '../../components/mute-button/mute-button.component';
 
 /* ─────────────────────────────────────────────────────────
  * ANIMATION STORYBOARD — Playground entrance (initial load)
@@ -59,6 +61,7 @@ const FIGMA_EMBED_URL =
     BrokenStreakDemoComponent,
     StickyNoteComponent,
     PolaroidCardComponent,
+    MuteButtonComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
@@ -82,7 +85,10 @@ export class HomeComponent implements OnInit {
     `of these options would make me smile the way smashing my finger into the ` +
     `screen does.`;
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(
+    private sanitizer: DomSanitizer,
+    protected sound: SoundService,
+  ) {
     this.figmaSrc = this.sanitizer.bypassSecurityTrustResourceUrl(FIGMA_EMBED_URL);
   }
 

@@ -52,7 +52,7 @@ export class SoundService {
   toggleMute(): void {
     const wasMuted = this.muted();
     this.muted.set(!wasMuted);
-    if (wasMuted) this.playPress();
+    if (wasMuted) this.playPopRelease();
   }
 
   play(id: string, semitones = 0, volume = 1): void {

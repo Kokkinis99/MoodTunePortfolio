@@ -23,6 +23,13 @@ const MOOD_BG: Record<string, string> = {
   angry: '#ff3f52',
 };
 
+const MOOD_SHADE: Record<string, string> = {
+  happy: '#5a9438',
+  sad:   '#7d6be0',
+  calm:  '#3d7d8e',
+  angry: '#d42840',
+};
+
 @Component({
   selector: 'app-broken-streak-demo',
   standalone: true,
@@ -71,10 +78,16 @@ const MOOD_BG: Record<string, string> = {
         <div class="bottom-slot">
           @if (savedStreak) {
             <button
-              class="lets-go-btn"
-              [style.background]="moodBg[currentMood]"
-              (click)="reset()"
-            >Let's go!</button>
+              class="pushable"
+              (mousedown)="sound.playPopPress()"
+              (click)="onLetsGoClick()"
+            >
+              <div class="shadow"></div>
+              <div class="edge" [style.background-color]="moodShade[currentMood]"></div>
+              <div class="front" [style.background-color]="moodBg[currentMood]">
+                <span>Let's go!</span>
+              </div>
+            </button>
           }
           <div class="hint" [class.visible]="overlayClicks === 0 && !savedStreak">Tap to save your streak</div>
         </div>
@@ -97,13 +110,14 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
   currentMood: 'happy' | 'sad' | 'angry' | 'calm' = 'happy';
 
   moods: Array<'happy' | 'sad' | 'angry' | 'calm'> = ['happy', 'sad', 'angry', 'calm'];
-  moodBg = MOOD_BG;
+  moodBg    = MOOD_BG;
+  moodShade = MOOD_SHADE;
 
   private bounceTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private sound: SoundService,
+    protected sound: SoundService,
   ) {}
 
   ngOnInit(): void {
@@ -208,6 +222,14 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       particleEls.forEach(p => p.remove());
     }, maxDuration + 200);
+  }
+
+  onLetsGoClick(): void {
+    this.sound.playPopRelease();
+    setTimeout(() => {
+      this.reset();
+      this.cdr.markForCheck();
+    }, 240);
   }
 
   setMood(mood: 'happy' | 'sad' | 'angry' | 'calm'): void {

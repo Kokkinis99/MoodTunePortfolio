@@ -136,30 +136,66 @@ $bounceEasing: linear(0, 0.544 5.5%, 0.947 11.5%, 1.213 18.1%, 1.298 21.7%, 1.35
   &.visible { opacity: 1; }
 }
 
-.lets-go-btn {
-  padding: 12px 32px;
-  border-radius: 8px;
+.pushable {
+  position: relative;
+  background: transparent;
   border: none;
-  color: white;
-  font-family: 'Quicksand', sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
+  padding: 0;
+  width: 160px;
+  height: 42px;
   @include c.pointer;
 
+  // Entrance — fades + scales in when savedStreak becomes true
   opacity: 1;
-  transform: scale(1);
   filter: blur(0);
-  transition: opacity 350ms ease, transform 350ms ease, filter 350ms ease;
-
+  transition: opacity 350ms ease, filter 350ms ease;
   @starting-style {
     opacity: 0;
-    transform: scale(0.95);
     filter: blur(4px);
   }
 
-  @keyframes squashBtn {
-    from { transform: scale(1.02); }
-    to   { transform: scale(0.98); }
+  .shadow {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 10px);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    filter: blur(2px);
+    transform: translateY(3px);
+    transition: transform 300ms cubic-bezier(.3, 3, .4, 1);
   }
-  animation: squashBtn 600ms ease-in-out 350ms infinite alternate;
+
+  .edge {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 10px);
+    border-radius: 8px;
+  }
+
+  .front {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-3px);
+    transition: transform 300ms cubic-bezier(.3, 3, .4, 1);
+
+    span {
+      color: #fff;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      pointer-events: none;
+    }
+  }
+
+  &:active {
+    .front  { transform: translateY(0); }
+    .shadow { transform: translateY(2px); }
+  }
 }

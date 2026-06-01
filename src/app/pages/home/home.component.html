@@ -4,7 +4,12 @@
   <header class="site-header" [style.background]="headerBg">
 
     <div class="header-top">
-      <a href="https://kokkin.is" class="back-link">← kokkin.is</a>
+      <div class="header-nav">
+        <a href="https://kokkin.is" class="back-link"
+           (mousedown)="sound.playPopPress()"
+           (click)="sound.playPopRelease()">← kokkin.is</a>
+        <app-mute-button />
+      </div>
       <h1 class="site-title">MoodTune</h1>
     </div>
 
