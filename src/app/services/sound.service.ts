@@ -55,7 +55,7 @@ export class SoundService {
     if (wasMuted) this.playPopRelease();
   }
 
-  play(id: string, semitones = 0, volume = 1): void {
+  play(id: string, semitones = 0, volume = .75): void {
     if (this.muted()) return;
     // Skip silently if the context hasn't been unlocked by a trusted gesture
     // yet — avoids the autoplay-policy warning on mouseenter events.
@@ -128,7 +128,7 @@ export class SoundService {
    * Throttle + delta-threshold logic lives in the caller.
    */
   playResizeTick(): void {
-    this.play('click', (Math.random() * 2 - 1) * 1.5 + 5);
+    this.play('click', (Math.random() * 2 - 1) * 1.5 + 5, 0.25);
   }
 
   /**
