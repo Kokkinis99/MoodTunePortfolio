@@ -1,10 +1,11 @@
 import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
 } from '@angular/core';
+import { SoundService } from '../../../services/sound.service';
 import { DatePipe, NgFor, NgClass } from '@angular/common';
 import {
   format,
@@ -86,6 +87,7 @@ const MOOD_INITIAL_DATE = buildMoodInitialDates();
       [class.expanded]="calendarExpanded"
       [style.--mood-color]="moodColor"
       [style.--mood-shade]="moodShade"
+      (mousedown)="onContainerMouseDown($event)"
       (click)="toggleExpand()"
     >
       <div class="data-container" [class.animated]="animateDataContainer">
@@ -162,7 +164,10 @@ export class CalendarDemoComponent implements OnInit {
   weekDates: CalendarDate[] = [];
   monthDates: CalendarDate[] = [];
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private sound: SoundService,
+  ) {}
 
   ngOnInit(): void {
     const date = MOOD_INITIAL_DATE[this.initialMood] ?? TODAY;
@@ -231,7 +236,22 @@ export class CalendarDemoComponent implements OnInit {
     };
   }
 
+  onContainerMouseDown(e: MouseEvent): void {
+    // Skip if pressing inside the date grid or nav arrows — those have their
+    // own interactions and their clicks never reach toggleExpand() anyway.
+    if ((e.target as Element).closest('.calendar-container, .month-navigation-container')) return;
+    this.sound.playPopPress();
+  }
+
   toggleExpand(): void {
+    if (this.calendarExpanded) {
+      // Collapsing — snap back to the month of the selected date
+      this.sound.playClose();
+      this.displayMonth = this.selectedDate;
+      this.buildDates();
+    } else {
+      this.sound.playOpen();
+    }
     this.calendarExpanded = !this.calendarExpanded;
     this.animateDataContainer = true;
     setTimeout(() => {
@@ -244,6 +264,7 @@ export class CalendarDemoComponent implements OnInit {
     event.stopPropagation();
     if (d.isFutureDate) return;
     if (isBefore(d.date, START_DATE)) return;
+    this.sound.playPopRelease();
     this.selectedDate = d.date;
     this.currentMood = d.mood ?? 'happy';
     // If clicked date is in a different month, update displayed month
@@ -257,6 +278,7 @@ export class CalendarDemoComponent implements OnInit {
   prevMonth(event: Event): void {
     event.stopPropagation();
     if (this.isMinMonth) return;
+    this.sound.playPop();
     this.displayMonth = subMonths(this.displayMonth, 1);
     this.buildDates();
   }
@@ -264,6 +286,7 @@ export class CalendarDemoComponent implements OnInit {
   nextMonth(event: Event): void {
     event.stopPropagation();
     if (this.isMaxMonth) return;
+    this.sound.playPop();
     this.displayMonth = addMonths(this.displayMonth, 1);
     this.buildDates();
   }

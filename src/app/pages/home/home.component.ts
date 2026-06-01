@@ -6,6 +6,25 @@ import { BrokenStreakDemoComponent } from '../../components/demos/broken-streak-
 import { StickyNoteComponent } from '../../components/sticky-note/sticky-note.component';
 import { PolaroidCardComponent } from '../../components/polaroid-card/polaroid-card.component';
 
+/* ─────────────────────────────────────────────────────────
+ * ANIMATION STORYBOARD — Playground entrance (initial load)
+ *
+ *    0ms   polaroid 1 pops in  (scale 0.7 → 1, opacity 0 → 1)
+ *  150ms   polaroid 2
+ *  300ms   polaroid 3
+ *  450ms   polaroid 4
+ *  600ms   polaroid 5
+ *  750ms   polaroid 6
+ * 1350ms   note 1  (after last polaroid settles)
+ * 1500ms   note 2
+ * 1650ms   note 3
+ * ───────────────────────────────────────────────────────── */
+const INTRO_TIMING = {
+  polaroidStagger: 150,   // ms between each polaroid entrance
+  notesStart:      1350,  // ms before first note (last polaroid + spring settle)
+  noteStagger:     150,   // ms between each note entrance
+};
+
 export type Mood = 'happy' | 'sad' | 'angry' | 'calm';
 
 const VALID_MOODS: Mood[] = ['happy', 'sad', 'angry', 'calm'];
@@ -48,6 +67,12 @@ export class HomeComponent implements OnInit {
   readonly moodStrip = MOOD_STRIP;
   currentMood: Mood = 'happy';
   readonly figmaSrc: SafeResourceUrl;
+  // Delays: ms before each item's entrance animation fires
+  readonly polaroidDelays  = Array.from({ length: 6 }, (_, i) => i * INTRO_TIMING.polaroidStagger);
+  readonly noteDelays      = Array.from({ length: 3 }, (_, i) => INTRO_TIMING.notesStart + i * INTRO_TIMING.noteStagger);
+  // Indices: drive the pitch walk in SoundService.playPop() — notes continue from where polaroids left off
+  readonly polaroidIndices = Array.from({ length: 6 }, (_, i) => i);
+  readonly noteIndices     = Array.from({ length: 3 }, (_, i) => 6 + i);
   readonly saveStreakDesc =
     `This little interaction got featured in ` +
     `<a href="https://www.joshwcomeau.com/email/wham-launch-009-student-showcase/" ` +

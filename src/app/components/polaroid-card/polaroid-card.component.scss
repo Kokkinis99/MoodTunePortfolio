@@ -15,6 +15,11 @@
 
 $spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%, 1.066 37%, 1.08 45.5%, 1.07 53%, 1.011 78.3%, 1);
 
+@keyframes polaroidPopIn {
+  from { opacity: 0; transform: rotate(var(--rotation, 0deg)) scale(0.7); }
+  to   { opacity: 1; transform: rotate(var(--rotation, 0deg)) scale(1);   }
+}
+
 .card {
   background: #fff;
   border-radius: 4px;
@@ -40,6 +45,13 @@ $spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%
       transform: rotate(calc(var(--rotation, 0deg) + var(--tilt, 0deg))) scale(1.04);
       box-shadow: 0 2px 0 #d8d8d8, 0 12px 32px rgba(0,0,0,0.18);
     }
+  }
+
+  // Must come after :hover — same specificity, last rule wins
+  &:not(.grabbed):active {
+    transform: rotate(calc(var(--rotation, 0deg) + var(--tilt, 0deg))) scale(0.95);
+    box-shadow: 0 2px 0 #d8d8d8, 0 2px 8px rgba(0,0,0,0.10);
+    transition: transform 100ms ease, box-shadow 100ms ease;
   }
 }
 
@@ -88,4 +100,9 @@ $spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%
   font-style: italic;
   font-size: 0.68rem;
   color: #999;
+}
+
+.card.intro {
+  animation: polaroidPopIn 700ms $spring both;
+  animation-delay: var(--intro-delay, 0ms);
 }

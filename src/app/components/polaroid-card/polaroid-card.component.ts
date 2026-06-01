@@ -1,12 +1,14 @@
 import {
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   Input,
+  OnDestroy,
   OnInit,
   ViewChild,
-  OnDestroy,
-  ChangeDetectorRef,
 } from '@angular/core';
+import { SoundService } from '../../services/sound.service';
 import { CdkDrag, CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
 import { NgIf } from '@angular/common';
 import { PolaroidExpandedComponent } from './polaroid-expanded.component';
@@ -22,8 +24,9 @@ import { nextZ } from '../z-order';
  *  600ms→  expanded transitions to full dialog size
  * ───────────────────────────────────────────────────────── */
 
-const HANDOFF_MS  = 600;
-const SCALE       = 1.8;
+const HANDOFF_MS     = 600;
+const SCALE          = 1.8;
+const INTRO_ANIM_MS  = 700;
 const MAX_TILT    = 12;
 const TILT_FACTOR = 20;
 const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0.961 28%, 1.025 37%, 1.036 48%, 1.016 62%, 1.004 78%, 1)';
@@ -44,6 +47,8 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
         class="card"
         [class.grabbed]="isDragging"
         [style.--rotation]="rotation + 'deg'"
+        (mouseenter)="onCardMouseEnter()"
+        (mousedown)="onCardMouseDown()"
         (click)="onCardClick()">
 
         <div class="image-area">
@@ -76,7 +81,7 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
   `,
   styleUrl: './polaroid-card.component.scss'
 })
-export class PolaroidCardComponent implements OnInit, OnDestroy {
+export class PolaroidCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() caption = '';
   @Input() thumbnailSrc = '';
   @Input() imageSrc = '';
@@ -92,6 +97,8 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   @Input() xPct = -1;        // percentage of viewport width (0–100); overrides initialX when set
   @Input() xPctNarrow = -1;  // xPct override for viewports < 1650px
   @Input() imageSrcs: string[] = [];
+  @Input() introDelay = -1;
+  @Input() introIndex = 0;
 
   dragPos = { x: 0, y: 0 };
 
@@ -110,14 +117,33 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   private rafId: number | null = null;
   private dragMoved = false;
   private handoffTimer: ReturnType<typeof setTimeout> | null = null;
+  private introTimers:  ReturnType<typeof setTimeout>[] = [];
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private sound: SoundService,
+  ) {}
 
   ngOnInit() {
     const narrow = window.innerWidth < 1650;
     const pct    = (narrow && this.xPctNarrow >= 0) ? this.xPctNarrow : this.xPct;
     const x    = pct >= 0 ? Math.round(window.innerWidth * pct / 100) : this.initialX;
     this.dragPos = { x, y: this.initialY };
+  }
+
+  ngAfterViewInit() {
+    if (this.introDelay < 0) return;
+    const card = this.cardEl.nativeElement;
+    card.style.setProperty('--intro-delay', `${this.introDelay}ms`);
+    card.classList.add('intro');
+    // Fire pop sound exactly when the animation delay fires
+    this.introTimers.push(
+      setTimeout(() => this.sound.playPop(this.introIndex), this.introDelay)
+    );
+    // Remove animation class once fully settled
+    this.introTimers.push(
+      setTimeout(() => card.classList.remove('intro'), this.introDelay + INTRO_ANIM_MS + 50)
+    );
   }
 
   // ── Z-index ─────────────────────────────────────────────
@@ -148,9 +174,21 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
     el.style.pointerEvents = 'none';
   }
 
+  // ── Hover / press / release sounds ──────────────────────
+
+  onCardMouseEnter(): void {
+    if (this.isDragging || this.isExpanding || this.isExpanded) return;
+    this.sound.playHoverOpen();
+  }
+
+  onCardMouseDown(): void {
+    this.sound.playPopPress();
+  }
+
   // ── Expand ──────────────────────────────────────────────
 
   onCardClick() {
+    this.sound.playPopRelease();
     this.bringToFront();
     if (this.dragMoved || this.isExpanding || this.isExpanded) return;
 
@@ -269,6 +307,7 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
         totalDx = Math.abs(totalDx) * bounce * (1 - t);
         totalDy *= bounce;
         prevEased = 0; startTime = now;
+        this.sound.playWallBounce();
         this.rafId = requestAnimationFrame(tick); return;
       } else if (rect.right + dx > window.innerWidth) {
         pos = { x: pos.x + (window.innerWidth - rect.right), y: pos.y + dy };
@@ -276,6 +315,7 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
         totalDx = -Math.abs(totalDx) * bounce * (1 - t);
         totalDy *= bounce;
         prevEased = 0; startTime = now;
+        this.sound.playWallBounce();
         this.rafId = requestAnimationFrame(tick); return;
       }
 
@@ -289,8 +329,9 @@ export class PolaroidCardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
-    if (this.handoffTimer !== null) clearTimeout(this.handoffTimer);
+    if (this.rafId !== null)        cancelAnimationFrame(this.rafId);
+    if (this.handoffTimer !== null)  clearTimeout(this.handoffTimer);
+    this.introTimers.forEach(clearTimeout);
     document.body.style.overflow = '';
   }
 }

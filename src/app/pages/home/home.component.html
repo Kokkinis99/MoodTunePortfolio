@@ -59,18 +59,24 @@
         text="This is a little playground for the app. I never got to completing it since life got in the way. But feel free to play around!"
         color="yellow"
         [rotation]="-3"
+        [introDelay]="noteDelays[0]"
+        [introIndex]="noteIndices[0]"
       ></app-sticky-note>
 
       <app-sticky-note
         text="If you have any questions, thoughts, ideas, feel free to reach out over at hello@kokkin.is!"
         color="pink"
         [rotation]="2"
+        [introDelay]="noteDelays[1]"
+        [introIndex]="noteIndices[1]"
       ></app-sticky-note>
 
       <app-sticky-note
         text="The app was built with Angular and Ionic. The data is stored in Firebase Firestore. The music is powered by the Spotify API."
         color="blue"
         [rotation]="-1"
+        [introDelay]="noteDelays[2]"
+        [introIndex]="noteIndices[2]"
       ></app-sticky-note>
 
       <app-polaroid-card
@@ -84,6 +90,8 @@
           [rotation]="4"
           [xPct]="20.2" [xPctNarrow]="14.5"
           [initialY]="15"
+          [introDelay]="polaroidDelays[0]"
+          [introIndex]="polaroidIndices[0]"
         ></app-polaroid-card>
 
         <app-polaroid-card
@@ -96,6 +104,8 @@
           [rotation]="-3"
           [xPct]="8.7" [xPctNarrow]="3.0"
           [initialY]="95"
+          [introDelay]="polaroidDelays[1]"
+          [introIndex]="polaroidIndices[1]"
         ></app-polaroid-card>
 
         <app-polaroid-card
@@ -107,6 +117,8 @@
           [rotation]="7"
           [xPct]="26.6" [xPctNarrow]="20.5"
           [initialY]="285"
+          [introDelay]="polaroidDelays[2]"
+          [introIndex]="polaroidIndices[2]"
         ></app-polaroid-card>
 
         <app-polaroid-card
@@ -118,6 +130,8 @@
           [rotation]="-5"
           [xPct]="38.1"
           [initialY]="335"
+          [introDelay]="polaroidDelays[3]"
+          [introIndex]="polaroidIndices[3]"
         ></app-polaroid-card>
 
         <app-polaroid-card
@@ -129,6 +143,8 @@
           [rotation]="-6"
           [xPct]="68.7" [xPctNarrow]="74.0"
           [initialY]="285"
+          [introDelay]="polaroidDelays[4]"
+          [introIndex]="polaroidIndices[4]"
         ></app-polaroid-card>
 
         <app-polaroid-card
@@ -140,6 +156,8 @@
           [rotation]="3"
           [xPct]="78.4" [xPctNarrow]="83.5"
           [initialY]="18"
+          [introDelay]="polaroidDelays[5]"
+          [introIndex]="polaroidIndices[5]"
         ></app-polaroid-card>
 
     </section><!-- end playground -->

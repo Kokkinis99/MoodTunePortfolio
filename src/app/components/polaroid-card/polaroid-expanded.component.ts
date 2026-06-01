@@ -1,15 +1,16 @@
 import {
   Component,
-  Input,
-  OnInit,
-  OnDestroy,
+  ElementRef,
   HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
   output,
   signal,
-  ElementRef,
-  ViewChild,
 } from '@angular/core';
 import { NgIf } from '@angular/common';
+import { SoundService } from '../../services/sound.service';
 
 /* ─────────────────────────────────────────────────────────
  * Mounts at 180*1.8 = 324px wide, 246*1.8 = 443px tall
@@ -17,9 +18,11 @@ import { NgIf } from '@angular/common';
  * Then immediately transitions to the final dialog size.
  * ───────────────────────────────────────────────────────── */
 
-const TIMING = { collapse: 750 };
-const MIN_W  = 380;
-const MIN_H  = 280;
+const TIMING            = { collapse: 750 };
+const MIN_W             = 380;
+const MIN_H             = 280;
+const TICK_INTERVAL_MS  = 80;   // minimum ms between resize ticks
+const TICK_MIN_DELTA_PX = 20;   // minimum combined w+h change to fire a tick
 
 @Component({
   selector: 'app-polaroid-expanded',
@@ -39,6 +42,7 @@ const MIN_H  = 280;
       [class.ready]="ready()"
       [class.closing]="closing()"
       [class.landscape]="landscapeVideo"
+      (click)="onDialogClick($event)"
     >
       <button class="close-btn" (click)="close()">✕</button>
 
@@ -90,10 +94,18 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
   private resizeStartH      = 0;
   private releaseTimer: ReturnType<typeof setTimeout> | null = null;
 
+  // Resize tick tracking
+  private lastTickTime = 0;
+  private lastTickW    = 0;
+  private lastTickH    = 0;
+
   private boundMouseMove = this.onMouseMove.bind(this);
   private boundMouseUp   = this.onMouseUp.bind(this);
 
+  constructor(private sound: SoundService) {}
+
   ngOnInit() {
+    this.sound.playOpen();
     requestAnimationFrame(() => this.ready.set(true));
   }
 
@@ -106,6 +118,7 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
 
   close() {
     if (this.closing()) return;
+    this.sound.playClose();
 
     this.isDraggingResize = false;
     document.removeEventListener('mousemove', this.boundMouseMove);
@@ -136,6 +149,13 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
     setTimeout(() => this.closed.emit(), TIMING.collapse);
   }
 
+  // ── Dialog click ambient ─────────────────────────────────────
+
+  onDialogClick(e: MouseEvent): void {
+    if ((e.target as Element).closest('.resize-handle')) return;
+    this.sound.playMoodSelect();
+  }
+
   // ── Resize ───────────────────────────────────────────────────
 
   onResizeStart(e: MouseEvent) {
@@ -153,6 +173,12 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
     this.resizeStartMouseY = e.clientY;
     this.resizeStartW      = rect.width;
     this.resizeStartH      = rect.height;
+
+    // One pop on grab; seed tick tracker so first move is measured from here
+    this.sound.playPopPress();
+    this.lastTickTime = 0;
+    this.lastTickW    = rect.width;
+    this.lastTickH    = rect.height;
 
     // Pin current size inline (cancels any in-flight CSS size transition)
     // and disable width/height transitions so resize is immediate
@@ -174,9 +200,21 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
     const dx = e.clientX - this.resizeStartMouseX;
     const dy = e.clientY - this.resizeStartMouseY;
     // 2× delta: all-directions growth from center
-    const el = this.dialogEl.nativeElement;
-    el.style.width  = Math.max(MIN_W, this.resizeStartW + 2 * dx) + 'px';
-    el.style.height = Math.max(MIN_H, this.resizeStartH + 2 * dy) + 'px';
+    const el   = this.dialogEl.nativeElement;
+    const newW = Math.max(MIN_W, this.resizeStartW + 2 * dx);
+    const newH = Math.max(MIN_H, this.resizeStartH + 2 * dy);
+    el.style.width  = newW + 'px';
+    el.style.height = newH + 'px';
+
+    // Rattle tick: fire if enough time has passed AND the size actually moved
+    const now   = Date.now();
+    const delta = Math.abs(newW - this.lastTickW) + Math.abs(newH - this.lastTickH);
+    if (now - this.lastTickTime >= TICK_INTERVAL_MS && delta >= TICK_MIN_DELTA_PX) {
+      this.sound.playResizeTick();
+      this.lastTickTime = now;
+      this.lastTickW    = newW;
+      this.lastTickH    = newH;
+    }
   }
 
   private onMouseUp(_e: MouseEvent) {
@@ -186,6 +224,7 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
 
     if (!this.isDraggingResize) return;
     this.isDraggingResize = false;
+    this.sound.playPopRelease();
 
     const el = this.dialogEl.nativeElement;
 

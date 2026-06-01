@@ -1,5 +1,12 @@
 @use 'cursors' as c;
 
+$spring: linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 0.962 25.4%, 1.017 29.8%, 1.066 37%, 1.08 45.5%, 1.07 53%, 1.011 78.3%, 1);
+
+@keyframes stickyNotePopIn {
+  from { opacity: 0; transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(0.7); }
+  to   { opacity: 1; transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(1);   }
+}
+
 :host { display: block; }
 
 .drag-wrapper {
@@ -39,6 +46,19 @@
   box-shadow: 8px 12px 32px rgba(0,0,0,0.22), 0 0 1px rgba(0,0,0,0.1);
 }
 
+// Must come after .grabbed — hover and active only apply when not dragging
+.sticky:not(.grabbed):hover {
+  transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(1.04);
+  box-shadow: 4px 6px 20px rgba(0,0,0,0.22), 0 0 1px rgba(0,0,0,0.1);
+}
+
+// Must come after :hover — same specificity, last rule wins
+.sticky:not(.grabbed):active {
+  transform: rotate(calc(var(--rotation, -2deg) + var(--tilt, 0deg))) scale(0.95);
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.10), 0 0 1px rgba(0,0,0,0.08);
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
 .sticky-body {
   font-size: 0.8rem;
   line-height: 1.5;
@@ -62,3 +82,8 @@
 .color-blue   { background: #93c5fd; }
 .color-green  { background: #86efac; }
 .color-orange { background: #fdba74; }
+
+.sticky.intro {
+  animation: stickyNotePopIn 700ms $spring both;
+  animation-delay: var(--intro-delay, 0ms);
+}

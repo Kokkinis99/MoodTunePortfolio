@@ -1,9 +1,11 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { SoundService } from '../../services/sound.service';
 import { CdkDrag, CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
 import { nextZ } from '../z-order';
 
-const MAX_TILT = 15;
-const TILT_FACTOR = 25;
+const MAX_TILT      = 15;
+const TILT_FACTOR   = 25;
+const INTRO_ANIM_MS = 700;
 
 @Component({
   selector: 'app-sticky-note',
@@ -18,24 +20,32 @@ const TILT_FACTOR = 25;
       <div #stickyEl
         class="sticky"
         [class]="stickyClasses"
-        [style.--rotation]="rotation + 'deg'">
+        [style.--rotation]="rotation + 'deg'"
+        (mouseenter)="onStickyMouseEnter()"
+        (mousedown)="onStickyMouseDown()"
+        (click)="onStickyClick()">
         <div class="sticky-body">{{ text }}</div>
       </div>
     </div>
   `,
   styleUrl: './sticky-note.component.scss'
 })
-export class StickyNoteComponent {
+export class StickyNoteComponent implements AfterViewInit, OnDestroy {
   @Input() text = '';
   @Input() color: 'yellow' | 'pink' | 'purple' | 'blue' | 'green' | 'orange' = 'yellow';
   @Input() rotation = -2;
+  @Input() introDelay = -1;
+  @Input() introIndex = 0;
 
   @ViewChild(CdkDrag) private cdkDrag!: CdkDrag;
   @ViewChild('stickyEl') private stickyEl!: ElementRef<HTMLDivElement>;
 
   isDragging = false;
 
-  constructor(private host: ElementRef<HTMLElement>) {}
+  constructor(
+    private host: ElementRef<HTMLElement>,
+    private sound: SoundService,
+  ) {}
 
   private bringToFront() {
     this.host.nativeElement.style.zIndex = String(nextZ());
@@ -56,6 +66,42 @@ export class StickyNoteComponent {
   private lastY = 0;
   private lastTime = 0;
   private rafId: number | null = null;
+  private introTimers: ReturnType<typeof setTimeout>[] = [];
+
+  ngAfterViewInit() {
+    if (this.introDelay < 0) return;
+    const sticky = this.stickyEl.nativeElement;
+    sticky.style.setProperty('--intro-delay', `${this.introDelay}ms`);
+    sticky.classList.add('intro');
+    // Fire pop sound exactly when the animation delay fires
+    this.introTimers.push(
+      setTimeout(() => this.sound.playPop(this.introIndex), this.introDelay)
+    );
+    // Remove animation class once fully settled
+    this.introTimers.push(
+      setTimeout(() => sticky.classList.remove('intro'), this.introDelay + INTRO_ANIM_MS + 50)
+    );
+  }
+
+  ngOnDestroy() {
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
+    this.introTimers.forEach(clearTimeout);
+  }
+
+  // ── Hover / press / release sounds ──────────────────────
+
+  onStickyMouseEnter(): void {
+    if (this.isDragging) return;
+    this.sound.playHoverOpen();
+  }
+
+  onStickyMouseDown(): void {
+    this.sound.playPopPress();
+  }
+
+  onStickyClick(): void {
+    this.sound.playPopRelease();
+  }
 
   onDragStarted() {
     this.bringToFront();
@@ -119,6 +165,7 @@ export class StickyNoteComponent {
         startPos = { ...pos };
         prevEased = 0;
         startTime = now;
+        this.sound.playWallBounce();
         this.rafId = requestAnimationFrame(tick);
         return;
       } else if (rect.right + dx > window.innerWidth) {
@@ -129,6 +176,7 @@ export class StickyNoteComponent {
         startPos = { ...pos };
         prevEased = 0;
         startTime = now;
+        this.sound.playWallBounce();
         this.rafId = requestAnimationFrame(tick);
         return;
       }

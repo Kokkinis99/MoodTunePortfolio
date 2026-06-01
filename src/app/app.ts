@@ -1,5 +1,6 @@
 import { Component, OnDestroy, afterNextRender, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SoundService } from './services/sound.service';
 
 // Scale goes 0.85 → 1.0 (range 0.15).
 // linear() value N → actual scale: 0.85 + 0.15 * N
@@ -8,6 +9,18 @@ const SPRING_DOWN = 'scale 250ms linear(0, 0.387 6.5%, 0.68 13.5%, 0.888 21.2%, 
 // SPRING_UP: one large bounce, no undershoot.
 // linear peak 3.7 → scale 0.85 + 0.15*3.7 = 1.405; after peak stays ≥ 1.0
 const SPRING_UP   = 'scale 1000ms linear(0, 0.045 0.9%, 0.181 1.9%, 1.165 6.7%, 1.312 8%, 1.354 8.7%, 1.371 9.4%, 1.362 10.3%, 1.31 11.4%, 0.938 16.3%, 0.884 17.6%, 0.862 18.9%, 0.866 19.9%, 0.885 21%, 1.025 26%, 1.043 27.2%, 1.051 28.5%, 1.043 30.6%, 0.991 35.5%, 0.981 38%, 1.007 47.6%, 0.997 57.1%, 1)';
+
+// Clicks on these elements have their own sounds — skip the ambient click.
+// app-broken-streak-demo is intentionally NOT listed wholesale: only its
+// interactive children are silenced so clicking the background still plays.
+const SILENT_SELECTORS = [
+  'app-calendar-demo',
+  'app-polaroid-card',
+  'app-sticky-note',
+  '.mood-image-container',  // broken-streak: tap-to-reveal card
+  '.mood-switcher',         // broken-streak: mood colour buttons
+  '.lets-go-btn',           // broken-streak: reset button
+].join(', ');
 
 const CURSORS: Record<string, { src: string; ox: number; oy: number }> = {
   'default':     { src: '/cursors/default.svg',     ox: 5,  oy: 2  },
@@ -35,7 +48,7 @@ export class App implements OnDestroy {
 
   private cleanup?: () => void;
 
-  constructor() {
+  constructor(private sound: SoundService) {
     afterNextRender(() => {
       const wrap = document.querySelector<HTMLElement>('.cursor-wrap');
       const img  = document.querySelector<HTMLImageElement>('.cursor-img');
@@ -108,6 +121,10 @@ export class App implements OnDestroy {
 
 
       const click = (e: MouseEvent) => {
+        if (!(e.target as Element).closest(SILENT_SELECTORS)) {
+          this.sound.playMoodSelect();
+        }
+
         const dust: HTMLElement[] = [];
 
         for (let i = 0; i < 8; i++) {

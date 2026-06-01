@@ -1,12 +1,13 @@
 import {
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
+  OnDestroy,
   OnInit,
   ViewChild,
-  ElementRef,
-  OnDestroy,
-  ChangeDetectorRef,
 } from '@angular/core';
+import { SoundService } from '../../../services/sound.service';
 
 const MOOD_COLORS: Record<string, string[]> = {
   happy: ['#78b853', '#5a9438'],
@@ -100,7 +101,10 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
 
   private bounceTimeout?: ReturnType<typeof setTimeout>;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private sound: SoundService,
+  ) {}
 
   ngOnInit(): void {
     this.currentMood = this.initialMood;
@@ -120,6 +124,8 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
 
   shrinkOverlay(): void {
     this.overlayClicks++;
+    // 0-based click index, capped at 6 so pitch maxes out at the reveal tap
+    this.sound.playStreakTap(this.overlayClicks - 1);
 
     this.bounceScale = true;
     if (this.bounceTimeout) clearTimeout(this.bounceTimeout);
@@ -205,6 +211,7 @@ export class BrokenStreakDemoComponent implements OnInit, OnDestroy {
   }
 
   setMood(mood: 'happy' | 'sad' | 'angry' | 'calm'): void {
+    this.sound.playMoodSelect();
     this.currentMood = mood;
     this.reset();
   }
