@@ -51,7 +51,8 @@ const TICK_MIN_DELTA_PX = 20;   // minimum combined w+h change to fire a tick
           <span>{{ caption }}</span>
         </div>
         <img *ngIf="imageSrc && !videoSrc && imageSrcs.length === 0" [src]="imageSrc" [alt]="dialogTitle" draggable="false" />
-        <video *ngIf="videoSrc" [src]="videoSrc" autoplay [muted]="videoMuted" loop playsinline [class.hiding]="hidingMedia()" [style.object-position]="videoObjectPosition"></video>
+        <video *ngIf="videoSrc" [src]="videoSrc" autoplay [muted]="videoMuted" loop playsinline
+          [class.hiding]="hidingMedia()" [style.object-position]="videoObjectPosition"></video>
         <div *ngIf="imageSrcs.length > 1" class="slideshow">
           <img class="slide slide-back" [src]="imageSrcs[1]" draggable="false" />
           <img class="slide slide-front" [src]="imageSrcs[0]" draggable="false" />
@@ -73,7 +74,7 @@ export class PolaroidExpandedComponent implements OnInit, OnDestroy {
   @Input() imageSrc = '';
   @Input() imageSrcs: string[] = [];
   @Input() videoSrc = '';
-  @Input() videoMuted = false;
+  @Input() videoMuted = true;
   @Input() videoObjectPosition = 'center';
   @Input() landscapeVideo = false;
   @Input() dialogTitle = '';
