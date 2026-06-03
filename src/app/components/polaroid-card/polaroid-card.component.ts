@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { SoundService } from '../../services/sound.service';
 import { CdkDrag, CdkDragEnd, CdkDragMove } from '@angular/cdk/drag-drop';
-import { NgIf } from '@angular/common';
 import { PolaroidExpandedComponent } from './polaroid-expanded.component';
 import { nextZ } from '../z-order';
 
@@ -34,7 +33,7 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
 @Component({
   selector: 'app-polaroid-card',
   standalone: true,
-  imports: [CdkDrag, NgIf, PolaroidExpandedComponent],
+  imports: [CdkDrag, PolaroidExpandedComponent],
   template: `
     <div class="drag-wrapper"
       cdkDrag
@@ -52,10 +51,14 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
         (click)="onCardClick()">
 
         <div class="image-area">
-          <div *ngIf="!thumbnailSrc" class="placeholder">
-            <span>{{ caption }}</span>
-          </div>
-          <img *ngIf="thumbnailSrc" [src]="thumbnailSrc" [alt]="caption" draggable="false" />
+          @if (!thumbnailSrc) {
+            <div class="placeholder">
+              <span>{{ caption }}</span>
+            </div>
+          }
+          @if (thumbnailSrc) {
+            <img [src]="thumbnailSrc" [alt]="caption" draggable="false" />
+          }
         </div>
 
         <div class="caption-area">
@@ -64,20 +67,21 @@ const SPRING_SOFT = 'linear(0, 0.218 4.3%, 0.453 9%, 0.671 14.3%, 0.846 20.5%, 0
       </div>
     </div>
 
-    <app-polaroid-expanded
-      *ngIf="isExpanded"
-      [imageSrc]="imageSrc"
-      [imageSrcs]="imageSrcs"
-      [videoSrc]="videoSrc"
-      [videoMuted]="videoMuted"
-      [videoObjectPosition]="videoObjectPosition"
-      [landscapeVideo]="landscapeVideo"
-      [dialogTitle]="dialogTitle"
-      [dialogDesc]="dialogDesc"
-      [caption]="caption"
-      (closingStart)="onExpandedClosing()"
-      (closed)="onClosed()"
-    ></app-polaroid-expanded>
+    @if (isExpanded) {
+      <app-polaroid-expanded
+        [imageSrc]="imageSrc"
+        [imageSrcs]="imageSrcs"
+        [videoSrc]="videoSrc"
+        [videoMuted]="videoMuted"
+        [videoObjectPosition]="videoObjectPosition"
+        [landscapeVideo]="landscapeVideo"
+        [dialogTitle]="dialogTitle"
+        [dialogDesc]="dialogDesc"
+        [caption]="caption"
+        (closingStart)="onExpandedClosing()"
+        (closed)="onClosed()"
+      ></app-polaroid-expanded>
+    }
   `,
   styleUrl: './polaroid-card.component.scss'
 })

@@ -9,7 +9,6 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { NgIf } from '@angular/common';
 import { SoundService } from '../../services/sound.service';
 
 /* ─────────────────────────────────────────────────────────
@@ -27,7 +26,7 @@ const TICK_MIN_DELTA_PX = 20;   // minimum combined w+h change to fire a tick
 @Component({
   selector: 'app-polaroid-expanded',
   standalone: true,
-  imports: [NgIf],
+  imports: [],
   template: `
     <div
       class="backdrop"
@@ -47,22 +46,32 @@ const TICK_MIN_DELTA_PX = 20;   // minimum combined w+h change to fire a tick
       <button class="close-btn" (click)="close()">✕</button>
 
       <div class="dialog-image" [class.has-video]="videoSrc" [class.hiding]="hidingMedia()">
-        <div *ngIf="!imageSrc && !videoSrc && imageSrcs.length === 0" class="image-placeholder">
-          <span>{{ caption }}</span>
-        </div>
-        <img *ngIf="imageSrc && !videoSrc && imageSrcs.length === 0" [src]="imageSrc" [alt]="dialogTitle" draggable="false" />
-        <video *ngIf="videoSrc" [src]="videoSrc" autoplay [muted]="videoMuted" loop playsinline
-          [class.hiding]="hidingMedia()" [style.object-position]="videoObjectPosition"></video>
-        <div *ngIf="imageSrcs.length > 1" class="slideshow">
-          <img class="slide slide-back" [src]="imageSrcs[1]" draggable="false" />
-          <img class="slide slide-front" [src]="imageSrcs[0]" draggable="false" />
-        </div>
+        @if (!imageSrc && !videoSrc && imageSrcs.length === 0) {
+          <div class="image-placeholder">
+            <span>{{ caption }}</span>
+          </div>
+        }
+        @if (imageSrc && !videoSrc && imageSrcs.length === 0) {
+          <img [src]="imageSrc" [alt]="dialogTitle" draggable="false" />
+        }
+        @if (videoSrc) {
+          <video [src]="videoSrc" autoplay [muted]="videoMuted" loop playsinline
+            [class.hiding]="hidingMedia()" [style.object-position]="videoObjectPosition"></video>
+        }
+        @if (imageSrcs.length > 1) {
+          <div class="slideshow">
+            <img class="slide slide-back" [src]="imageSrcs[1]" draggable="false" />
+            <img class="slide slide-front" [src]="imageSrcs[0]" draggable="false" />
+          </div>
+        }
       </div>
 
-      <div class="dialog-text" *ngIf="ready() && !closing()">
-        <h2 class="dialog-title">{{ dialogTitle }}</h2>
-        <p class="dialog-desc" [innerHTML]="dialogDesc"></p>
-      </div>
+      @if (ready() && !closing()) {
+        <div class="dialog-text">
+          <h2 class="dialog-title">{{ dialogTitle }}</h2>
+          <p class="dialog-desc" [innerHTML]="dialogDesc"></p>
+        </div>
+      }
 
       <div class="resize-handle" (mousedown)="onResizeStart($event)"></div>
     </div>

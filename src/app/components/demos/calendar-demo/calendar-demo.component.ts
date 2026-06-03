@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { SoundService } from '../../../services/sound.service';
-import { DatePipe, NgFor, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import {
   format,
   addMonths,
@@ -79,7 +79,7 @@ const MOOD_INITIAL_DATE = buildMoodInitialDates();
 @Component({
   selector: 'app-calendar-demo',
   standalone: true,
-  imports: [DatePipe, NgFor, NgClass],
+  imports: [DatePipe, NgClass],
   changeDetection: ChangeDetectionStrategy.Default,
   template: `
     <div
@@ -101,36 +101,38 @@ const MOOD_INITIAL_DATE = buildMoodInitialDates();
         <div class="calendar-container">
           <!-- Day headers -->
           <div class="calendar days-row">
-            <div
-              class="day"
-              *ngFor="let d of daysOfWeek"
-              [class.current-day]="isCurrentDayLabel(d)"
-            >{{ d }}</div>
+            @for (d of daysOfWeek; track d) {
+              <div class="day" [class.current-day]="isCurrentDayLabel(d)">{{ d }}</div>
+            }
           </div>
 
           <!-- Week view -->
           @if (!calendarExpanded) {
             <div class="calendar" (click)="$event.stopPropagation()">
-              <div class="date-container" *ngFor="let d of weekDates">
-                <div
-                  class="date"
-                  [ngClass]="getDateClasses(d, 'week')"
-                  (click)="selectDate($event, d)"
-                >{{ d.date | date:'d' }}</div>
-              </div>
+              @for (d of weekDates; track d.date) {
+                <div class="date-container">
+                  <div
+                    class="date"
+                    [ngClass]="getDateClasses(d, 'week')"
+                    (click)="selectDate($event, d)"
+                  >{{ d.date | date:'d' }}</div>
+                </div>
+              }
             </div>
           }
 
           <!-- Month view -->
           @if (calendarExpanded) {
             <div class="calendar" (click)="$event.stopPropagation()">
-              <div class="date-container" *ngFor="let d of monthDates">
-                <div
-                  class="date"
-                  [ngClass]="getDateClasses(d, 'month')"
-                  (click)="selectDate($event, d)"
-                >{{ d.date | date:'d' }}</div>
-              </div>
+              @for (d of monthDates; track d.date) {
+                <div class="date-container">
+                  <div
+                    class="date"
+                    [ngClass]="getDateClasses(d, 'month')"
+                    (click)="selectDate($event, d)"
+                  >{{ d.date | date:'d' }}</div>
+                </div>
+              }
             </div>
           }
         </div>

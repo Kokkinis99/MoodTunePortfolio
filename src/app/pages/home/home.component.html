@@ -16,12 +16,9 @@
 
     <!-- full-bleed image row — in normal flow, between title and desc -->
     <div class="mood-images-strip" aria-hidden="true">
-      <img
-        *ngFor="let src of moodStrip"
-        [src]="src"
-        class="mood-img"
-        draggable="false"
-      />
+      @for (src of moodStrip; track src) {
+        <img [src]="src" class="mood-img" draggable="false" />
+      }
     </div>
 
     <div class="header-bottom">

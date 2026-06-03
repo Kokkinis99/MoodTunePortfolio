@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgFor } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SoundService } from '../../services/sound.service';
 import { CalendarDemoComponent } from '../../components/demos/calendar-demo/calendar-demo.component';
@@ -56,7 +55,6 @@ const FIGMA_EMBED_URL =
   selector: 'app-home',
   standalone: true,
   imports: [
-    NgFor,
     CalendarDemoComponent,
     BrokenStreakDemoComponent,
     StickyNoteComponent,
